@@ -72,7 +72,7 @@ trait ModelNestedList
     /**
      * Get tree nodes options.
      */
-    public static function treeNodes(): array
+    public static function nestedListNodes(): array
     {
         $result = [];
 
@@ -94,7 +94,7 @@ trait ModelNestedList
         );
 
         foreach ($nodes as $node) {
-            static::buildTreeNodeItem($result, $node, $primaryKeyName, $titleKeyName, $childrenKeyName);
+            static::buildNestedListNodeItem($result, $node, $primaryKeyName, $titleKeyName, $childrenKeyName);
         }
 
         return $result;
@@ -118,7 +118,7 @@ trait ModelNestedList
         return static::buildSortQuery()->get();
     }
 
-    private static function buildTreeNodeItem(array &$final, array $item, string $primaryKeyName, string $titleKeyName, string $childrenKeyName): void
+    private static function buildNestedListNodeItem(array &$final, array $item, string $primaryKeyName, string $titleKeyName, string $childrenKeyName): void
     {
         if (! isset($item[$primaryKeyName])) {
             throw new InvalidArgumentException("Unset '{$primaryKeyName}' primary key.");
@@ -129,7 +129,7 @@ trait ModelNestedList
 
         if (count($item[$childrenKeyName])) {
             foreach ($item[$childrenKeyName] as $child) {
-                static::buildTreeNodeItem($children, $child, $primaryKeyName, $titleKeyName, $childrenKeyName);
+                static::buildNestedListNodeItem($children, $child, $primaryKeyName, $titleKeyName, $childrenKeyName);
             }
         }
         $final[] = [

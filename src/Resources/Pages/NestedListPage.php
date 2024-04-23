@@ -14,7 +14,7 @@ use Illuminate\Support\Str;
 use InvadersXX\FilamentNestedList\Actions\DeleteAction;
 use InvadersXX\FilamentNestedList\Actions\EditAction;
 use InvadersXX\FilamentNestedList\Actions\ViewAction;
-use InvadersXX\FilamentNestedList\Pages\TreePage as BasePage;
+use InvadersXX\FilamentNestedList\Pages\NestedListPage as BasePage;
 
 abstract class NestedListPage extends BasePage
 {

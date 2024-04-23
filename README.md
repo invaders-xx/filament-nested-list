@@ -15,8 +15,6 @@ To install the package, run the following command:
 composer require invaders-xx/filament-nested-list
 ```
 
-> **Important: Need to publish assets after version 2.x**
-
 ```bash
 php artisan filament:assets
 ```
@@ -86,13 +84,14 @@ Schema::create('product_categories', function (Blueprint $table) {
 });
 ```
 
-This plugin provides a convenient method called `treeColumns()` that you can use to add the required columns for the
+This plugin provides a convenient method called `nestedListColumns()` that you can use to add the required columns for
+the
 tree structure to your table more easily. Here's an example:
 
 ```
 Schema::create('product_categories', function (Blueprint $table) {
     $table->id();
-    $table->treeColumns();
+    $table->nestedListColumns();
     $table->timestamps();
 });
 ```
@@ -213,9 +212,9 @@ class ProductCategoryWidget extends BaseWidget
     // you can customize the maximum depth of your tree
     protected static int $maxDepth = 2;
 
-    protected ?string $treeTitle = 'ProductCategory';
+    protected ?string $itle = 'ProductCategory';
 
-    protected bool $enableTreeTitle = true;
+    protected bool $enableTitle = true;
 
     protected function getFormSchema(): array
     {
@@ -271,7 +270,7 @@ data.
 To create a tree page for resource, you can use:
 
 ``` 
-php artisan make:filament-nested-list-page ProductCategoryTree --resource=ProductCategory
+php artisan make:filament-nested-list-page ProductCategoryNestedList --resource=ProductCategory
 ```
 
 #### Register a Page to the resource
@@ -283,7 +282,7 @@ public static function getPages(): array
 {
     return [
         // ...
-        'tree-list' => Pages\ProductCategoryTree::route('/tree-list'),
+        'tree-list' => Pages\ProductCategoryNestedList::route('/tree-list'),
     ];
 }
 ```
@@ -341,32 +340,6 @@ protected function hasEditAction(): bool
 protected function hasViewAction(): bool
 {
     return false;
-}
-```
-
-#### Record ICON
-
-To customize the prefix icon for each record in a tree page, you can use the `getTreeRecordIcon()` method in your tree
-page class. This method should return a string that represents the name of the icon you want to use for the record. For
-example:
-
-```php
-public function getTreeRecordIcon(?\Illuminate\Database\Eloquent\Model $record = null): ?string
-{
-    // default null
-    return 'heroicon-o-cake';
-}
-```
-
-#### Node collapsed state
-
-You can customize a collapsed state of the node. If you would like to show your tree initially collapsed you can use:
-
-```php
-public function getNodeCollapsedState(?\Illuminate\Database\Eloquent\Model $record = null): bool
-{
-    // All tree nodes will be collapsed by default.
-    return true;
 }
 ```
 

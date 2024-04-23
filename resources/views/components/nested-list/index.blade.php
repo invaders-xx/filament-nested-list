@@ -8,7 +8,7 @@
             $data = [
                 'id' => $record->id,
                 'order' => $record->order,
-                'text' => $this->getTreeRecordTitle($record),
+                'text' => $this->getNestedListRecordTitle($record),
             ];
             $parent = $this->getParentKey($record);
             if ($parent > 0) {
@@ -24,7 +24,7 @@
         x-data="{
         items: JSON.parse('{{ json_encode($data) }}'),
         save() {
-            $wire.updateTree(this.items)
+            $wire.updateNestedList(this.items)
         },
         init() {
             let nestedSortables = new NestedSort({
@@ -45,7 +45,7 @@
         },
     }"
 >
-    <x-filament::section :heading="($this->displayTreeTitle() ?? false) ? $this->getTreeTitle() : null">
+    <x-filament::section :heading="($this->displayNestedListTitle() ?? false) ? $this->getNestedListTitle() : null">
         <menu class="mb-4 flex gap-2" id="nestable-menu">
             <x-filament::button
                     tag="button"
@@ -53,8 +53,8 @@
                     wire:loading.attr="disabled"
                     wire:loading.class="cursor-wait opacity-70"
             >
-                <x-filament::loading-indicator class="h-4 w-4" wire:loading wire:target="saveTree"/>
-                <span wire:loading.remove wire:target="saveTree">
+                <x-filament::loading-indicator class="h-4 w-4" wire:loading wire:target="saveNestedList"/>
+                <span wire:loading.remove wire:target="saveNestedList">
                     {{ __('filament-nested-list::filament-nested-list.button.save') }}
                 </span>
             </x-filament::button>
@@ -64,9 +64,9 @@
     </x-filament::section>
 </div>
 
-<form wire:submit.prevent="callMountedTreeAction">
+<form wire:submit.prevent="callMountedNestedListAction">
     @php
-        $action = $this->getMountedTreeAction();
+        $action = $this->getMountedNestedListAction();
     @endphp
 
     <x-filament::modal
@@ -80,18 +80,18 @@
             :heading="$action?->getModalHeading()"
             :icon="$action?->getModalIcon()"
             :icon-color="$action?->getModalIconColor()"
-            :id="$this->getId() . '-tree-action'"
+            :id="$this->getId() . '-nested-list-action'"
             :slide-over="$action?->isModalSlideOver()"
             :sticky-footer="$action?->isModalFooterSticky()"
             :sticky-header="$action?->isModalHeaderSticky()"
             :visible="filled($action)"
             :width="$action?->getModalWidth()"
-            :wire:key="$action ? $this->getId() . '.tree.actions.' . $action->getName() . '.modal' : null"
-            x-on:closed-form-component-action-modal.window="if (($event.detail.id === '{{ $this->getId() }}') && $wire.mountedTreeActions.length) open()"
+            :wire:key="$action ? $this->getId() . '.nested-list.actions.' . $action->getName() . '.modal' : null"
+            x-on:closed-form-component-action-modal.window="if (($event.detail.id === '{{ $this->getId() }}') && $wire.mountedNestedListActions.length) open()"
             x-on:modal-closed.stop="
-            const mountedTreeActionShouldOpenModal = {{ Js::from($action && $this->mountedTreeActionShouldOpenModal()) }}
+            const mountedNestedListActionShouldOpenModal = {{ Js::from($action && $this->mountedNestedListActionShouldOpenModal()) }}
 
-            if (! mountedTreeActionShouldOpenModal) {
+            if (! mountedNestedListActionShouldOpenModal) {
                 return
             }
 
@@ -99,7 +99,7 @@
                 return
             }
 
-            $wire.unmountTreeAction(false)
+            $wire.unmountNestedListAction(false)
         "
             x-on:opened-form-component-action-modal.window="if ($event.detail.id === '{{ $this->getId() }}') close()"
     >
@@ -108,8 +108,8 @@
 
             @if (count(($infolist = $action->getInfolist())?->getComponents() ?? []))
                 {{ $infolist }}
-            @elseif ($this->mountedTreeActionHasForm())
-                {{ $this->getMountedTreeActionForm() }}
+            @elseif ($this->mountedNestedListActionHasForm())
+                {{ $this->getMountedNestedListActionForm() }}
             @endif
 
             {{ $action->getModalContentFooter() }}

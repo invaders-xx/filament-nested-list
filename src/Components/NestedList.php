@@ -15,7 +15,7 @@ class NestedList extends ViewComponent
 
     public const LOADING_TARGETS = ['activeLocale'];
 
-    protected string $view = 'filament-nested-list::components.tree.index';
+    protected string $view = 'filament-nested-list::components.nested-list.index';
 
     protected string $viewIdentifier = 'tree';
 
@@ -86,6 +86,6 @@ class NestedList extends ViewComponent
 
     public function getMountedActionForm(): ?ComponentContainer
     {
-        return $this->getLivewire()->getMountedTreeActionForm();
+        return $this->getLivewire()->getMountedNestedListActionForm();
     }
 }

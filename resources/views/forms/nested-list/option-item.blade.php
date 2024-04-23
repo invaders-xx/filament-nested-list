@@ -76,7 +76,7 @@
             <div class="filament-forms-tree-component-children ml-4 gap-1"
                  x-show="! collapsed"
             >
-                @include('filament-nested-list::forms.tree.option-item', ['optionValue' => $childValue, 'item' => $childItem, 'parent' => $optionValue])
+                @include('filament-nested-list::forms.nested-list.option-item', ['optionValue' => $childValue, 'item' => $childItem, 'parent' => $optionValue])
             </div>
         @endforeach
     @endif

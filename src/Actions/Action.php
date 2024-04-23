@@ -59,17 +59,17 @@ class Action extends BaseAction implements Groupable, HasNestedList, HasRecord
 
     public function getRecordTitleAttribute(): ?string
     {
-        return $this->getCustomRecordTitleAttribute() ?? $this->getTree()->getRecordTitleAttribute();
+        return $this->getCustomRecordTitleAttribute() ?? $this->getNestedList()->getRecordTitleAttribute();
     }
 
     public function getModelLabel(): string
     {
-        return $this->getCustomModelLabel() ?? $this->getTree()->getModelLabel();
+        return $this->getCustomModelLabel() ?? $this->getNestedList()->getModelLabel();
     }
 
     public function getPluralModelLabel(): string
     {
-        return $this->getCustomPluralModelLabel() ?? $this->getTree()->getPluralModelLabel();
+        return $this->getCustomPluralModelLabel() ?? $this->getNestedList()->getPluralModelLabel();
     }
 
     public function prepareModalAction(StaticAction $action): StaticAction
@@ -81,7 +81,7 @@ class Action extends BaseAction implements Groupable, HasNestedList, HasRecord
         }
 
         return $action
-            ->tree($this->getTree())
+            ->nestedList($this->getNestedList())
             ->record($this->getRecord());
     }
 
@@ -104,7 +104,7 @@ class Action extends BaseAction implements Groupable, HasNestedList, HasRecord
 
     protected function getDefaultEvaluationParameters(): array
     {
-        return collect(['record', 'model', 'tree'])
+        return collect(['record', 'model', 'nestedList'])
             ->flip()
             ->map(fn ($v, $name) => $this->resolveDefaultClosureDependencyForEvaluationByName($name)[0] ?? null)
             ->toArray();
@@ -118,7 +118,7 @@ class Action extends BaseAction implements Groupable, HasNestedList, HasRecord
         return match ($parameterName) {
             'model' => [$this->getModel()],
             'record' => [$this->getRecord()],
-            'tree' => [$this->getTree()],
+            'nestedList' => [$this->getNestedList()],
             default => parent::resolveDefaultClosureDependencyForEvaluationByName($parameterName),
         };
     }

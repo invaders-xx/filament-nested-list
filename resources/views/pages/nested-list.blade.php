@@ -9,7 +9,7 @@
             class="gap-4"
     >
         <x-filament::grid.column>
-            {{ $this->tree }}
+            {{ $this->nestedList }}
         </x-filament::grid.column>
 
     </x-filament::grid>

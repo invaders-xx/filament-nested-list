@@ -1,3 +1,3 @@
 <x-filament::widget class="filament-widgets-nested-list-widget">
-    {{ $this->tree }}
+    {{ $this->nestedList }}
 </x-filament::widget>

@@ -113,7 +113,7 @@
                 class="gap-1"
         >
             @foreach ($getOptions() as $optionValue => $item)
-                @include('filament-nested-list::forms.tree.option-item', ['optionValue' => $optionValue, 'item' => $item])
+                @include('filament-nested-list::forms.nested-list.option-item', ['optionValue' => $optionValue, 'item' => $item])
             @endforeach
         </x-filament::grid>
     </div>

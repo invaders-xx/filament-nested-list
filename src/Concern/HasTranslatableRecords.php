@@ -10,7 +10,7 @@ trait HasTranslatableRecords
 {
     use HasRecords {
         HasRecords::getRecords as traitGetRecords;
-        HasRecords::resolveTreeRecord as traitResolveTreeRecord;
+        HasRecords::resolveNestedListRecord as traitResolveTreeRecord;
     }
 
     public function getRecords(): ?Collection
@@ -50,7 +50,7 @@ trait HasTranslatableRecords
         }
     }
 
-    protected function resolveTreeRecord(?string $key): ?Model
+    protected function resolveNestedListRecord(?string $key): ?Model
     {
         $record = $this->traitResolveTreeRecord($key);
 

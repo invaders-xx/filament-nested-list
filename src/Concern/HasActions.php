@@ -11,75 +11,67 @@ use InvadersXX\FilamentNestedList\Actions\Action;
 use InvadersXX\FilamentNestedList\Actions\ActionGroup;
 
 /**
- * @property Form $mountedTreeActionForm
+ * @property Form $mountedNestedListActionForm
  */
 trait HasActions
 {
     /**
-     * @var array<string> | null
+     * @var null|array<string>
      */
-    public ?array $mountedTreeAction = [];
+    public ?array $mountedNestedListAction = [];
 
     /**
-     * @var array<string, array<string, mixed>> | null
+     * @var null|array<string, array<string, mixed>>
      */
-    public ?array $mountedTreeActionData = [];
+    public ?array $mountedNestedListActionData = [];
 
-    public int|string|null $mountedTreeActionRecord = null;
+    public int|string|null $mountedNestedListActionRecord = null;
 
-    protected array $cachedTreeActions;
+    protected array $cachedNestedListActions;
 
-    protected ?Model $cachedMountedTreeActionRecord = null;
+    protected ?Model $cachedMountedNestedListActionRecord = null;
 
-    protected int|string|null $cachedMountedTreeActionRecordKey = null;
+    protected int|string|null $cachedMountedNestedListActionRecordKey = null;
 
-    public function cacheTreeActions(): void
+    public function cacheNestedListActions(): void
     {
-        $this->cachedTreeActions = [];
+        $this->cachedNestedListActions = [];
 
         $actions = Action::configureUsing(
-            Closure::fromCallable([$this, 'configureTreeAction']),
-            fn (): array => $this->getTreeActions(),
+            Closure::fromCallable([$this, 'configureNestedListAction']),
+            fn (): array => $this->getNestedListActions(),
         );
 
         foreach ($actions as $index => $action) {
             if ($action instanceof ActionGroup) {
                 foreach ($action->getActions() as $groupedAction) {
-                    $groupedAction->tree($this->getCachedTree());
+                    $groupedAction->nestedList($this->getCachedNestedList());
                 }
 
-                $this->cachedTreeActions[$index] = $action;
+                $this->cachedNestedListActions[$index] = $action;
 
                 continue;
             }
 
-            $action->tree($this->getCachedTree());
+            $action->nestedList($this->getCachedNestedList());
 
-            $this->cachedTreeActions[$action->getName()] = $action;
+            $this->cachedNestedListActions[$action->getName()] = $action;
         }
     }
 
-    /**
-     * Action for each record
-     */
-    protected function getTreeActions(): array
+    public function mountNestedListAction(string $name, ?string $record = null)
     {
-        return [];
-    }
+        $this->mountedNestedListAction[] = $name;
+        $this->mountedNestedListActionData[] = [];
 
-    public function mountTreeAction(string $name, ?string $record = null)
-    {
-        $this->mountedTreeAction[] = $name;
-        $this->mountedTreeActionData[] = [];
-
-        if (count($this->mountedTreeAction) === 1) {
-            $this->mountedTreeActionRecord($record);
+        if (count($this->mountedNestedListAction) === 1) {
+            $this->mountedNestedListActionRecord($record);
         }
 
-        $action = $this->getMountedTreeAction();
+        $action = $this->getMountedNestedListAction();
 
         if (! $action) {
-            $this->unmountTreeAction();
+            $this->unmountNestedListAction();
 
             return null;
         }
@@ -92,17 +84,17 @@ trait HasActions
             return;
         }
 
-        $this->cacheMountedTreeActionForm();
+        $this->cacheMountedNestedListActionForm();
 
         try {
-            $hasForm = $this->mountedTreeActionHasForm();
+            $hasForm = $this->mountedNestedListActionHasForm();
 
             if ($hasForm) {
                 $action->callBeforeFormFilled();
             }
 
             $action->mount([
-                'form' => $this->getMountedTreeActionForm(),
+                'form' => $this->getMountedNestedListActionForm(),
             ]);
 
             if ($hasForm) {
@@ -111,40 +103,40 @@ trait HasActions
         } catch (Halt $exception) {
             return null;
         } catch (Cancel $exception) {
-            $this->unmountTreeAction(shouldCancelParentActions: false);
+            $this->unmountNestedListAction(shouldCancelParentActions: false);
 
             return null;
         }
 
-        if (! $this->mountedTreeActionShouldOpenModal()) {
-            return $this->callMountedTreeAction();
+        if (! $this->mountedNestedListActionShouldOpenModal()) {
+            return $this->callMountedNestedListAction();
         }
 
         $this->resetErrorBag();
 
-        $this->openTreeActionModal();
+        $this->openNestedListActionModal();
 
         return null;
     }
 
-    public function mountedTreeActionRecord($record): void
+    public function mountedNestedListActionRecord($record): void
     {
-        $this->mountedTreeActionRecord = $record;
+        $this->mountedNestedListActionRecord = $record;
     }
 
-    public function getMountedTreeAction(): ?Action
+    public function getMountedNestedListAction(): ?Action
     {
-        if (! count($this->mountedTreeAction ?? [])) {
+        if (! count($this->mountedNestedListAction ?? [])) {
             return null;
         }
 
-        return $this->getCachedTreeAction($this->mountedTreeAction) ?? $this->getCachedTreeEmptyStateAction($this->mountedTreeAction);
+        return $this->getCachedNestedListAction($this->mountedNestedListAction) ?? $this->getCachedNestedListEmptyStateAction($this->mountedNestedListAction);
     }
 
     /**
-     * @param  string | array<string>  $name
+     * @param array<string>|string $name
      */
-    public function getCachedTreeAction(string|array $name): ?Action
+    public function getCachedNestedListAction(string|array $name): ?Action
     {
         if (is_string($name) && str($name)->contains('.')) {
             $name = explode('.', $name);
@@ -156,12 +148,176 @@ trait HasActions
             $name = $firstName;
         }
 
-        return $this->findTreeAction($name)?->record($this->getMountedTreeActionRecord());
+        return $this->findNestedListAction($name)?->record($this->getMountedNestedListActionRecord());
     }
 
-    protected function findTreeAction(string $name): ?Action
+    public function getCachedNestedListActions(): array
     {
-        $actions = $this->getCachedTreeActions();
+        return $this->cachedNestedListActions;
+    }
+
+    public function getMountedNestedListActionRecord(): ?Model
+    {
+        $recordKey = $this->getMountedNestedListActionRecordKey();
+
+        if ($this->cachedMountedNestedListActionRecord && ($this->cachedMountedNestedListActionRecordKey === $recordKey)) {
+            return $this->cachedMountedNestedListActionRecord;
+        }
+
+        $this->cachedMountedNestedListActionRecordKey = $recordKey;
+
+        return $this->cachedMountedNestedListActionRecord = $this->getNestedListRecord($recordKey);
+    }
+
+    public function getMountedNestedListActionRecordKey(): int|string|null
+    {
+        return $this->mountedNestedListActionRecord;
+    }
+
+    public function unmountNestedListAction(bool $shouldCancelParentActions = true): void
+    {
+        $action = $this->getMountedNestedListAction();
+
+        if (! ($shouldCancelParentActions && $action)) {
+            $this->popMountedNestedListAction();
+        } elseif ($action->shouldCancelAllParentActions()) {
+            $this->resetMountedNestedListActionProperties();
+        } else {
+            $parentActionToCancelTo = $action->getParentActionToCancelTo();
+
+            while (true) {
+                $recentlyClosedParentAction = $this->popMountedNestedListAction();
+
+                if (
+                    blank($parentActionToCancelTo)
+                    || ($recentlyClosedParentAction === $parentActionToCancelTo)
+                ) {
+                    break;
+                }
+            }
+        }
+
+        if (! count($this->mountedNestedListAction)) {
+            $this->closeNestedListActionModal();
+
+            $action?->record(null);
+            $this->mountedNestedListActionRecord(null);
+
+            return;
+        }
+
+        $this->cacheMountedNestedListActionForm();
+
+        $this->resetErrorBag();
+
+        $this->openNestedListActionModal();
+    }
+
+    public function getMountedNestedListActionForm()
+    {
+        $action = $this->getMountedNestedListAction();
+
+        if (! $action) {
+            return null;
+        }
+
+        if ((! $this->isCachingForms) && $this->hasCachedForm('mountedNestedListActionForm')) {
+            return $this->getCachedForm('mountedNestedListActionForm');
+        }
+
+        return $action->getForm(
+            $this->makeForm()
+                ->model($this->getMountedNestedListActionRecord() ?? $this->getNestedListQuery()->getModel()::class)
+                ->statePath('mountedNestedListActionData.' . array_key_last($this->mountedNestedListActionData))
+                ->operation(implode('.', $this->mountedNestedListAction)),
+        );
+    }
+
+    public function mountedNestedListActionHasForm(): bool
+    {
+        return (bool) count($this->getMountedNestedListActionForm()?->getComponents() ?? []);
+    }
+
+    public function mountedNestedListActionShouldOpenModal(): bool
+    {
+        return $this->getMountedNestedListAction()->shouldOpenModal(
+            checkForFormUsing: $this->mountedTableActionHasForm(...),
+        );
+        // $action = $this->getMountedNestedListAction();
+
+        // if ($action->shouldOpenModal()) {
+        //     return false;
+        // }
+
+        // return $action->getModalDescription() ||
+        //     $action->getModalContent() ||
+        //     $action->getModalContentFooter() ||
+        //     $action->getInfolist() ||
+        //     $this->mountedNestedListActionHasForm();
+    }
+
+    public function callMountedNestedListAction(?string $arguments = null)
+    {
+        $action = $this->getMountedNestedListAction();
+
+        if (! $action) {
+            return null;
+        }
+
+        if (filled($this->mountedNestedListActionRecord) && ($action->getRecord() === null)) {
+            return null;
+        }
+
+        if ($action->isDisabled()) {
+            return null;
+        }
+
+        $action->arguments($arguments ? json_decode($arguments, associative: true) : []);
+
+        $form = $this->getMountedNestedListActionForm();
+
+        $result = null;
+
+        try {
+            if ($this->mountedNestedListActionHasForm()) {
+                $action->callBeforeFormValidated();
+
+                $action->formData($form->getState());
+
+                $action->callAfterFormValidated();
+            }
+
+            $action->callBefore();
+
+            $result = $action->call([
+                'form' => $form,
+            ]);
+
+            $result = $action->callAfter() ?? $result;
+        } catch (Halt $exception) {
+            return null;
+        } catch (Cancel $exception) {
+        }
+
+        $action->resetArguments();
+        $action->resetFormData();
+
+        $this->unmountNestedListAction();
+
+        return $result;
+    }
+
+    /**
+     * Action for each record.
+     */
+    protected function getNestedListActions(): array
+    {
+        return [];
+    }
+
+    protected function findNestedListAction(string $name): ?Action
+    {
+        $actions = $this->getCachedNestedListActions();
 
         $action = $actions[$name] ?? null;
 
@@ -186,207 +342,51 @@ trait HasActions
         return null;
     }
 
-    public function getCachedTreeActions(): array
-    {
-        return $this->cachedTreeActions;
-    }
-
-    public function getMountedTreeActionRecord(): ?Model
-    {
-        $recordKey = $this->getMountedTreeActionRecordKey();
-
-        if ($this->cachedMountedTreeActionRecord && ($this->cachedMountedTreeActionRecordKey === $recordKey)) {
-            return $this->cachedMountedTreeActionRecord;
-        }
-
-        $this->cachedMountedTreeActionRecordKey = $recordKey;
-
-        return $this->cachedMountedTreeActionRecord = $this->getTreeRecord($recordKey);
-    }
-
-    public function getMountedTreeActionRecordKey(): int|string|null
-    {
-        return $this->mountedTreeActionRecord;
-    }
-
-    public function unmountTreeAction(bool $shouldCancelParentActions = true): void
-    {
-        $action = $this->getMountedTreeAction();
-
-        if (! ($shouldCancelParentActions && $action)) {
-            $this->popMountedTreeAction();
-        } elseif ($action->shouldCancelAllParentActions()) {
-            $this->resetMountedTreeActionProperties();
-        } else {
-            $parentActionToCancelTo = $action->getParentActionToCancelTo();
-
-            while (true) {
-                $recentlyClosedParentAction = $this->popMountedTreeAction();
-
-                if (
-                    blank($parentActionToCancelTo) ||
-                    ($recentlyClosedParentAction === $parentActionToCancelTo)
-                ) {
-                    break;
-                }
-            }
-        }
-
-        if (! count($this->mountedTreeAction)) {
-            $this->closeTreeActionModal();
-
-            $action?->record(null);
-            $this->mountedTreeActionRecord(null);
-
-            return;
-        }
-
-        $this->cacheMountedTreeActionForm();
-
-        $this->resetErrorBag();
-
-        $this->openTreeActionModal();
-    }
-
-    protected function popMountedTreeAction(): ?string
+    protected function popMountedNestedListAction(): ?string
     {
         try {
-            return array_pop($this->mountedTreeAction);
+            return array_pop($this->mountedNestedListAction);
         } finally {
-            array_pop($this->mountedTreeActionData);
+            array_pop($this->mountedNestedListActionData);
         }
     }
 
-    protected function resetMountedTreeActionProperties(): void
+    protected function resetMountedNestedListActionProperties(): void
     {
-        $this->mountedTreeAction = [];
-        $this->mountedTreeActionData = [];
+        $this->mountedNestedListAction = [];
+        $this->mountedNestedListActionData = [];
     }
 
-    protected function closeTreeActionModal(): void
+    protected function closeNestedListActionModal(): void
     {
-        $this->dispatch('close-modal', id: "{$this->getId()}-tree-action");
+        $this->dispatch('close-modal', id: "{$this->getId()}-nested-list-action");
     }
 
-    protected function cacheMountedTreeActionForm(): void
+    protected function cacheMountedNestedListActionForm(): void
     {
         $this->cacheForm(
-            'mountedTreeActionForm',
-            fn () => $this->getMountedTreeActionForm(),
+            'mountedNestedListActionForm',
+            fn () => $this->getMountedNestedListActionForm(),
         );
     }
 
-    public function getMountedTreeActionForm()
+    protected function openNestedListActionModal(): void
     {
-        $action = $this->getMountedTreeAction();
-
-        if (! $action) {
-            return null;
-        }
-
-        if ((! $this->isCachingForms) && $this->hasCachedForm('mountedTreeActionForm')) {
-            return $this->getCachedForm('mountedTreeActionForm');
-        }
-
-        return $action->getForm(
-            $this->makeForm()
-                ->model($this->getMountedTreeActionRecord() ?? $this->getTreeQuery()->getModel()::class)
-                ->statePath('mountedTreeActionData.'.array_key_last($this->mountedTreeActionData))
-                ->operation(implode('.', $this->mountedTreeAction)),
-        );
+        $this->dispatch('open-modal', id: "{$this->getId()}-nested-list-action");
     }
 
-    protected function openTreeActionModal(): void
-    {
-        $this->dispatch('open-modal', id: "{$this->getId()}-tree-action");
-    }
-
-    public function mountedTreeActionHasForm(): bool
-    {
-        return (bool) count($this->getMountedTreeActionForm()?->getComponents() ?? []);
-    }
-
-    public function mountedTreeActionShouldOpenModal(): bool
-    {
-        return $this->getMountedTreeAction()->shouldOpenModal(
-            checkForFormUsing: $this->mountedTableActionHasForm(...),
-        );
-        // $action = $this->getMountedTreeAction();
-
-        // if ($action->shouldOpenModal()) {
-        //     return false;
-        // }
-
-        // return $action->getModalDescription() ||
-        //     $action->getModalContent() ||
-        //     $action->getModalContentFooter() ||
-        //     $action->getInfolist() ||
-        //     $this->mountedTreeActionHasForm();
-    }
-
-    public function callMountedTreeAction(?string $arguments = null)
-    {
-        $action = $this->getMountedTreeAction();
-
-        if (! $action) {
-            return null;
-        }
-
-        if (filled($this->mountedTreeActionRecord) && ($action->getRecord() === null)) {
-            return null;
-        }
-
-        if ($action->isDisabled()) {
-            return null;
-        }
-
-        $action->arguments($arguments ? json_decode($arguments, associative: true) : []);
-
-        $form = $this->getMountedTreeActionForm();
-
-        $result = null;
-
-        try {
-            if ($this->mountedTreeActionHasForm()) {
-                $action->callBeforeFormValidated();
-
-                $action->formData($form->getState());
-
-                $action->callAfterFormValidated();
-            }
-
-            $action->callBefore();
-
-            $result = $action->call([
-                'form' => $form,
-            ]);
-
-            $result = $action->callAfter() ?? $result;
-        } catch (Halt $exception) {
-            return null;
-        } catch (Cancel $exception) {
-        }
-
-        $action->resetArguments();
-        $action->resetFormData();
-
-        $this->unmountTreeAction();
-
-        return $result;
-    }
-
-    protected function configureTreeAction(Action $action): void
+    protected function configureNestedListAction(Action $action): void
     {
     }
 
     protected function getHasActionsForms(): array
     {
         return [
-            'mountedTreeActionData' => $this->getMountedTreeActionForm(),
+            'mountedNestedListActionData' => $this->getMountedNestedListActionForm(),
         ];
     }
 
-    protected function getTreeActionsPosition(): ?string
+    protected function getNestedListActionsPosition(): ?string
     {
         return null;
     }

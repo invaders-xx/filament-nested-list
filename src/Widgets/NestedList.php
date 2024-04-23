@@ -12,7 +12,7 @@ use InvadersXX\FilamentNestedList\Actions\Action;
 use InvadersXX\FilamentNestedList\Actions\DeleteAction;
 use InvadersXX\FilamentNestedList\Actions\EditAction;
 use InvadersXX\FilamentNestedList\Actions\ViewAction;
-use InvadersXX\FilamentNestedList\Components\NestedList as TreeComponent;
+use InvadersXX\FilamentNestedList\Components\NestedList as NestedListComponent;
 use InvadersXX\FilamentNestedList\Concern\InteractWithNestedList;
 use InvadersXX\FilamentNestedList\Contract\HasNestedList;
 
@@ -104,7 +104,7 @@ class NestedList extends Widget implements HasForms, HasNestedList
 
     protected function configureDeleteAction(DeleteAction $action): DeleteAction
     {
-        $action->tree($this->getCachedTree());
+        $action->nestedList($this->getCachedNestedList());
 
         $action->iconButton();
 
@@ -113,9 +113,9 @@ class NestedList extends Widget implements HasForms, HasNestedList
         return $action;
     }
 
-    public static function tree(TreeComponent $tree): TreeComponent
+    public static function nestedList(NestedListComponent $nestedList): NestedListComponent
     {
-        return $tree;
+        return $nestedList;
     }
 
     protected function afterConfiguredDeleteAction(DeleteAction $action): DeleteAction
@@ -125,7 +125,7 @@ class NestedList extends Widget implements HasForms, HasNestedList
 
     protected function configureEditAction(EditAction $action): EditAction
     {
-        $action->tree($this->getCachedTree());
+        $action->nestedList($this->getCachedNestedList());
 
         $action->iconButton();
 

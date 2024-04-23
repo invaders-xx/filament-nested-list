@@ -17,20 +17,20 @@ trait InteractWithNestedList
 
     protected bool $hasMounted = false;
 
-    protected NestedList $tree;
+    protected NestedList $nestedList;
 
     public function bootedInteractWithNestedList(): void
     {
-        $tree = $this->getTree();
-        $this->tree = $tree->configureUsing(
-            Closure::fromCallable([static::class, 'tree']),
-            fn (): NestedList => static::tree($tree)->maxDepth(static::getMaxDepth()),
+        $nestedList = $this->getNestedList();
+        $this->nestedList = $nestedList->configureUsing(
+            Closure::fromCallable([static::class, 'nestedList']),
+            fn (): NestedList => static::nestedList($nestedList)->maxDepth(static::getMaxDepth()),
         );
 
-        $this->cacheTreeActions();
-        $this->cacheTreeEmptyStateActions();
+        $this->cacheNestedListActions();
+        $this->cacheNestedListEmptyStateActions();
 
-        $this->tree->actions(array_values($this->getCachedTreeActions()));
+        $this->nestedList->actions(array_values($this->getCachedNestedListActions()));
 
         if ($this->hasMounted) {
             return;
@@ -39,7 +39,7 @@ trait InteractWithNestedList
         $this->hasMounted = true;
     }
 
-    protected function getTree(): NestedList
+    protected function getNestedList(): NestedList
     {
         return NestedList::make($this);
     }
@@ -48,7 +48,7 @@ trait InteractWithNestedList
     {
     }
 
-    public function getTreeRecordTitle(?Model $record = null): string
+    public function getNestedListRecordTitle(?Model $record = null): string
     {
         if (! $record) {
             return '';
@@ -57,28 +57,20 @@ trait InteractWithNestedList
         return $record->{(method_exists($record, 'determineTitleColumnName') ? $record->determineTitleColumnName() : 'title')};
     }
 
-    public function getTreeRecordIcon(?Model $record = null): ?string
-    {
-        if (! $record) {
-            return null;
-        }
-
-        return $record->{(method_exists($record, 'determineIconColumnName') ? $record->determineIconColumnName() : 'icon')};
-    }
 
     public function getRecordKey(?Model $record): ?string
     {
-        return $this->getCachedTree()->getRecordKey($record);
+        return $this->getCachedNestedList()->getRecordKey($record);
     }
 
-    protected function getCachedTree(): NestedList
+    protected function getCachedNestedList(): NestedList
     {
-        return $this->tree;
+        return $this->nestedList;
     }
 
     public function getParentKey(?Model $record): ?string
     {
-        return $this->getCachedTree()->getParentKey($record);
+        return $this->getCachedNestedList()->getParentKey($record);
     }
 
     public function getNodeCollapsedState(?Model $record = null): bool
@@ -89,7 +81,7 @@ trait InteractWithNestedList
     /**
      * Update the tree list.
      */
-    public function updateTree(?array $list = null): void
+    public function updateNestedList(?array $list = null): void
     {
         $needReload = false;
         if ($list) {
@@ -124,23 +116,6 @@ trait InteractWithNestedList
         }
         if ($needReload) {
             $this->dispatch('refreshNestedList')->self();
-        }
-    }
-
-    /**
-     * Unnesting the tree array.
-     */
-    private function unnestArray(array &$result, array $current, $parent): void
-    {
-        foreach ($current as $index => $item) {
-            $key = data_get($item, 'id');
-            $result[$key] = [
-                'parent_id' => $parent,
-                'order' => $index + 1,
-            ];
-            if (isset($item['children']) && count($item['children'])) {
-                $this->unnestArray($result, $item['children'], $key);
-            }
         }
     }
 }

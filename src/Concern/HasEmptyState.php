@@ -8,55 +8,55 @@ use InvadersXX\FilamentNestedList\Actions\Action;
 
 trait HasEmptyState
 {
-    protected array $cachedTreeEmptyStateActions;
+    protected array $cachedNestedListEmptyStateActions;
 
-    public function cacheTreeEmptyStateActions(): void
+    public function cacheNestedListEmptyStateActions(): void
     {
         $actions = Action::configureUsing(
-            Closure::fromCallable([$this, 'configureTreeAction']),
-            fn (): array => $this->getTreeEmptyStateActions(),
+            Closure::fromCallable([$this, 'configureNestedListAction']),
+            fn (): array => $this->getNestedListEmptyStateActions(),
         );
 
-        $this->cachedTreeEmptyStateActions = [];
+        $this->cachedNestedListEmptyStateActions = [];
 
         foreach ($actions as $action) {
-            $action->tree($this->getCachedTree());
+            $action->nestedList($this->getCachedNestedList());
 
-            $this->cachedTreeEmptyStateActions[$action->getName()] = $action;
+            $this->cachedNestedListEmptyStateActions[$action->getName()] = $action;
         }
     }
 
-    protected function getTreeEmptyStateActions(): array
+    public function getCachedNestedListEmptyStateAction(string $name): ?Action
+    {
+        return $this->getCachedNestedListEmptyStateActions()[$name] ?? null;
+    }
+
+    public function getCachedNestedListEmptyStateActions(): array
+    {
+        return $this->cachedNestedListEmptyStateActions;
+    }
+
+    protected function getNestedListEmptyStateActions(): array
     {
         return [];
     }
 
-    public function getCachedTreeEmptyStateAction(string $name): ?Action
-    {
-        return $this->getCachedTreeEmptyStateActions()[$name] ?? null;
-    }
-
-    public function getCachedTreeEmptyStateActions(): array
-    {
-        return $this->cachedTreeEmptyStateActions;
-    }
-
-    protected function getTreeEmptyState(): ?View
+    protected function getNestedListEmptyState(): ?View
     {
         return null;
     }
 
-    protected function getTreeEmptyStateDescription(): ?string
+    protected function getNestedListEmptyStateDescription(): ?string
     {
         return null;
     }
 
-    protected function getTreeEmptyStateHeading(): ?string
+    protected function getNestedListEmptyStateHeading(): ?string
     {
         return null;
     }
 
-    protected function getTreeEmptyStateIcon(): ?string
+    protected function getNestedListEmptyStateIcon(): ?string
     {
         return null;
     }

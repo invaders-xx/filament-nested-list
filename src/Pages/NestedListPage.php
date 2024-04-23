@@ -28,6 +28,11 @@ abstract class NestedListPage extends Page implements HasNestedList
         return static::$maxDepth;
     }
 
+    public static function tree(NestedList $tree): NestedList
+    {
+        return $tree;
+    }
+
     protected function configureAction(FilamentActionsAction $action): void
     {
         match (true) {
@@ -94,18 +99,13 @@ abstract class NestedListPage extends Page implements HasNestedList
 
     protected function configureDeleteAction(Actions\DeleteAction $action): Actions\DeleteAction
     {
-        $action->tree($this->getCachedTree());
+        $action->nestedList($this->getCachedNestedList());
 
         $action->iconButton();
 
         $this->afterConfiguredDeleteAction($action);
 
         return $action;
-    }
-
-    public static function tree(NestedList $tree): NestedList
-    {
-        return $tree;
     }
 
     protected function afterConfiguredDeleteAction(Actions\DeleteAction $action): Actions\DeleteAction
@@ -115,7 +115,7 @@ abstract class NestedListPage extends Page implements HasNestedList
 
     protected function configureEditAction(Actions\EditAction $action): Actions\EditAction
     {
-        $action->tree($this->getCachedTree());
+        $action->nestedList($this->getCachedNestedList());
 
         $action->iconButton();
 
@@ -153,7 +153,7 @@ abstract class NestedListPage extends Page implements HasNestedList
 
     protected function configureViewAction(Actions\ViewAction $action): Actions\ViewAction
     {
-        $action->tree($this->getCachedTree());
+        $action->nestedList($this->getCachedNestedList());
 
         $action->iconButton();
 

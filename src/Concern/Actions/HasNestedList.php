@@ -6,5 +6,5 @@ use InvadersXX\FilamentNestedList\Components\NestedList;
 
 interface HasNestedList
 {
-    public function tree(NestedList $tree): static;
+    public function nestedList(NestedList $nestedList): static;
 }

@@ -11,14 +11,14 @@ trait HasRecords
 {
     protected ?Collection $records = null;
 
-    public function getTreeRecord(?string $key): ?Model
+    public function getNestedListRecord(?string $key): ?Model
     {
-        return $this->resolveTreeRecord($key);
+        return $this->resolveNestedListRecord($key);
     }
 
-    protected function resolveTreeRecord(?string $key): ?Model
+    protected function resolveNestedListRecord(?string $key): ?Model
     {
-        if ($key === null) {
+        if (null === $key) {
             return null;
         }
 
@@ -37,7 +37,7 @@ trait HasRecords
 
     protected function getWithRelationQuery(): Builder
     {
-        $query = $this->getTreeQuery();
+        $query = $this->getNestedListQuery();
         if (method_exists($this->getModel(), 'children') && $this->getModel()::has('children')) {
             return $query->with('children');
         }
@@ -45,7 +45,7 @@ trait HasRecords
         return $query;
     }
 
-    protected function getTreeQuery(): Builder
+    protected function getNestedListQuery(): Builder
     {
         return $this->getModel()::query();
     }

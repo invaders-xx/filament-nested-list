@@ -25,14 +25,14 @@ class ActionGroup extends BaseActionGroup implements HasNestedList, HasRecord
         return $actions;
     }
 
-    public function tree(NestedList $tree): static
+    public function nestedList(NestedList $nestedList): static
     {
         foreach ($this->actions as $action) {
             if (! $action instanceof HasNestedList) {
                 continue;
             }
 
-            $action->tree($tree);
+            $action->nestedList($nestedList);
         }
 
         return $this;

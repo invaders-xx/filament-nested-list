@@ -17,7 +17,7 @@ class NestedList extends Field
     use BelongsToModel;
     use HasState;
 
-    protected string $view = 'filament-nested-list::forms.tree';
+    protected string $view = 'filament-nested-list::forms.nested-list';
 
     protected ?array $nodes = null;
 
@@ -32,29 +32,6 @@ class NestedList extends Field
     protected string|Closure|null $relationship = null;
 
     protected ?Closure $modifyRelationshipQueryUsing = null;
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        $this->default([]);
-
-        $this->afterStateHydrated(static function (NestedList $component, $state) {
-            if (is_array($state)) {
-                return;
-            }
-
-            $component->state([]);
-        });
-
-        $this->dehydrateStateUsing(static function (NestedList $component, $state) {
-            if (! is_array($state)) {
-                $state = [];
-            }
-
-            return $component->formatNodeState($state, $component->getOptions());
-        });
-    }
 
     public function getState()
     {
@@ -71,14 +48,24 @@ class NestedList extends Field
         }
     }
 
+    private function getNodeState(array $state): array
+    {
+        $final = [];
+
+        foreach ($state as $key => $childOrKey) {
+            if (is_array($childOrKey)) {
+                $final = array_merge($final, [$key], $this->getNodeState($childOrKey));
+            } else {
+                $final = array_merge($final, [$childOrKey]);
+            }
+        }
+
+        return $final;
+    }
+
     public function getNodeLabel(string $uuid): ?string
     {
         return data_get($this->getChildComponentContainer($uuid)->getRawState(), $this->getTitleColumn() ?? 'title');
-    }
-
-    public function getTitleColumn(): ?string
-    {
-        return $this->evaluate($this->titleColumn);
     }
 
     public function nodes(array|Arrayable $nodes): static
@@ -161,6 +148,29 @@ class NestedList extends Field
         );
     }
 
+    protected function getStateFromRelatedRecords(Collection $records): array
+    {
+        if (! $records->count()) {
+            return [];
+        }
+
+        $activeLocale = $this->getLivewire()->getActiveFormLocale();
+
+        return $records
+            ->map(function (Model $record) use ($activeLocale): array {
+                $state = $record->attributesToArray();
+
+                if ($activeLocale && method_exists($record, 'getTranslatableAttributes') && method_exists($record, 'getTranslation')) {
+                    foreach ($record->getTranslatableAttributes() as $attribute) {
+                        $state[$attribute] = $record->getTranslation($attribute, $activeLocale);
+                    }
+                }
+
+                return $state;
+            })
+            ->toArray();
+    }
+
     public function getCachedExistingRecords(): Collection
     {
         if ($this->cachedExistingRecords) {
@@ -209,67 +219,27 @@ class NestedList extends Field
         return $this->evaluate($this->relationship);
     }
 
-    public function getOptions(): array
+    protected function setUp(): void
     {
-        return $this->getNodeOptions($this->getNodes());
-    }
+        parent::setUp();
 
-    public function getKeyColumn(): ?string
-    {
-        return $this->evaluate($this->keyColumn);
-    }
+        $this->default([]);
 
-    public function getChildrenColumn(): ?string
-    {
-        return $this->evaluate($this->childrenColumn);
-    }
-
-    public function getNodes(): array
-    {
-        return $this->nodes ?? [];
-    }
-
-    protected function getStateFromRelatedRecords(Collection $records): array
-    {
-        if (! $records->count()) {
-            return [];
-        }
-
-        $activeLocale = $this->getLivewire()->getActiveFormLocale();
-
-        return $records
-            ->map(function (Model $record) use ($activeLocale): array {
-                $state = $record->attributesToArray();
-
-                if ($activeLocale && method_exists($record, 'getTranslatableAttributes') && method_exists($record, 'getTranslation')) {
-                    foreach ($record->getTranslatableAttributes() as $attribute) {
-                        $state[$attribute] = $record->getTranslation($attribute, $activeLocale);
-                    }
-                }
-
-                return $state;
-            })
-            ->toArray();
-    }
-
-    protected function getRelatedModel(): string
-    {
-        return $this->getRelationship()->getModel()::class;
-    }
-
-    private function getNodeState(array $state): array
-    {
-        $final = [];
-
-        foreach ($state as $key => $childOrKey) {
-            if (is_array($childOrKey)) {
-                $final = array_merge($final, [$key], $this->getNodeState($childOrKey));
-            } else {
-                $final = array_merge($final, [$childOrKey]);
+        $this->afterStateHydrated(static function (NestedList $component, $state) {
+            if (is_array($state)) {
+                return;
             }
-        }
 
-        return $final;
+            $component->state([]);
+        });
+
+        $this->dehydrateStateUsing(static function (NestedList $component, $state) {
+            if (! is_array($state)) {
+                $state = [];
+            }
+
+            return $component->formatNodeState($state, $component->getOptions());
+        });
     }
 
     private function formatNodeState(array $state, array $options): array
@@ -285,6 +255,11 @@ class NestedList extends Field
         return $final;
     }
 
+    public function getOptions(): array
+    {
+        return $this->getNodeOptions($this->getNodes());
+    }
+
     private function getNodeOptions(array $options): array
     {
         return collect($options)
@@ -294,5 +269,30 @@ class NestedList extends Field
                 'children' => $this->getNodeOptions(data_get($item, $this->getChildrenColumn() ?? 'children') ?? []),
             ])
             ->toArray();
+    }
+
+    public function getKeyColumn(): ?string
+    {
+        return $this->evaluate($this->keyColumn);
+    }
+
+    public function getTitleColumn(): ?string
+    {
+        return $this->evaluate($this->titleColumn);
+    }
+
+    public function getChildrenColumn(): ?string
+    {
+        return $this->evaluate($this->childrenColumn);
+    }
+
+    public function getNodes(): array
+    {
+        return $this->nodes ?? [];
+    }
+
+    protected function getRelatedModel(): string
+    {
+        return $this->getRelationship()->getModel()::class;
     }
 }

@@ -7,22 +7,22 @@ use InvadersXX\FilamentNestedList\Contract\HasNestedList;
 
 trait BelongsToNestedList
 {
-    protected NestedList $tree;
+    protected NestedList $nestedList;
 
-    public function tree(NestedList $tree): static
+    public function nestedList(NestedList $nestedList): static
     {
-        $this->tree = $tree;
+        $this->nestedList = $nestedList;
 
         return $this;
     }
 
     public function getLivewire(): HasNestedList
     {
-        return $this->getTree()->getLivewire();
+        return $this->getNestedList()->getLivewire();
     }
 
-    public function getTree(): NestedList
+    public function getNestedList(): NestedList
     {
-        return $this->tree;
+        return $this->nestedList;
     }
 }
