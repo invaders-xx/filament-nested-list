@@ -134,7 +134,7 @@ trait HasActions
     }
 
     /**
-     * @param array<string>|string $name
+     * @param  array<string>|string  $name
      */
     public function getCachedNestedListAction(string|array $name): ?Action
     {
@@ -228,7 +228,7 @@ trait HasActions
         return $action->getForm(
             $this->makeForm()
                 ->model($this->getMountedNestedListActionRecord() ?? $this->getNestedListQuery()->getModel()::class)
-                ->statePath('mountedNestedListActionData.' . array_key_last($this->mountedNestedListActionData))
+                ->statePath('mountedNestedListActionData.'.array_key_last($this->mountedNestedListActionData))
                 ->operation(implode('.', $this->mountedNestedListAction)),
         );
     }

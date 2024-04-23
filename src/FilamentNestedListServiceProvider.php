@@ -37,8 +37,8 @@ class FilamentNestedListServiceProvider extends PackageServiceProvider
     public function packageBooted(): void
     {
         FilamentAsset::register([
-            Css::make('filament-nested-list-styles', __DIR__ . '/../resources/dist/filament-nested-list.css'),
-            Js::make('filament-nested-list-scripts', __DIR__ . '/../resources/dist/filament-nested-list.js'),
+            Css::make('filament-nested-list-styles', __DIR__.'/../resources/dist/filament-nested-list.css'),
+            Js::make('filament-nested-list-scripts', __DIR__.'/../resources/dist/filament-nested-list.js'),
         ], 'invaders-xx/filament-nested-list');
     }
 

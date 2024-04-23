@@ -18,7 +18,7 @@ trait HasRecords
 
     protected function resolveNestedListRecord(?string $key): ?Model
     {
-        if (null === $key) {
+        if ($key === null) {
             return null;
         }
 

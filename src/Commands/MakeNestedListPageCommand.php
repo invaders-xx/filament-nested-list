@@ -11,16 +11,20 @@ use Illuminate\Support\Str;
 class MakeNestedListPageCommand extends Command
 {
     use CanManipulateFiles;
-    
+
     public $description = 'Creates a Filament nested list page class';
-    protected $signature = "make:filament-nested-list-page {name?} {--model=} {--R|resource=} {--F|force}";
+
+    protected $signature = 'make:filament-nested-list-page {name?} {--model=} {--R|resource=} {--F|force}';
+
     protected ?string $resourceClass = null;
+
     protected string $page;
+
     protected string $pageClass;
 
     public function handle(): int
     {
-        $this->page =  Str::of(strval($this->argument('name') ?? $this->askRequired('Name (e.g. `Users`)', 'name')))
+        $this->page = Str::of(strval($this->argument('name') ?? $this->askRequired('Name (e.g. `Users`)', 'name')))
             ->trim('/')
             ->trim('\\')
             ->trim(' ')
@@ -108,7 +112,6 @@ class MakeNestedListPageCommand extends Command
             ->replace('//', '/')
             ->append('.php');
 
-
         if (! $this->option('force') && $this->checkForCollision([$path])) {
             return false;
         }
@@ -130,16 +133,16 @@ class MakeNestedListPageCommand extends Command
 
             $this->copyStubToApp($stub, $path, [
                 'class' => $this->pageClass,
-                'namespace' => $namespace . ($pageNamespace !== '' ? "\\{$pageNamespace}" : ''),
+                'namespace' => $namespace.($pageNamespace !== '' ? "\\{$pageNamespace}" : ''),
                 'modelClass' => $modelClass == $this->pageClass ? 'NestedListPageModel' : $modelClass,
                 'model' => $model == $this->pageClass ? "{$model} as NestedListPageModel" : $model,
             ]);
         } else {
             $this->copyStubToApp($stub, $path, [
-                'namespace' => "{$resourceNamespace}\\{$resourceClass}\\Pages" . ($pageNamespace !== '' ? "\\{$pageNamespace}" : ''),
+                'namespace' => "{$resourceNamespace}\\{$resourceClass}\\Pages".($pageNamespace !== '' ? "\\{$pageNamespace}" : ''),
                 'resource' => $this->resourceClass == $this->pageClass ? "{$resourceNamespace}\\{$resourceClass} as NestedListPageResource" : "{$resourceNamespace}\\{$resourceClass}",
                 'class' => $this->pageClass,
-                'resourceClass' => $resourceClass == $this->pageClass ? "NestedListPageResource" : $resourceClass,
+                'resourceClass' => $resourceClass == $this->pageClass ? 'NestedListPageResource' : $resourceClass,
             ]);
         }
 

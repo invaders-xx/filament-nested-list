@@ -57,7 +57,6 @@ trait InteractWithNestedList
         return $record->{(method_exists($record, 'determineTitleColumnName') ? $record->determineTitleColumnName() : 'title')};
     }
 
-
     public function getRecordKey(?Model $record): ?string
     {
         return $this->getCachedNestedList()->getRecordKey($record);

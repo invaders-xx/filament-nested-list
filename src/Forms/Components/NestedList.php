@@ -182,8 +182,8 @@ class NestedList extends Field
 
         if ($relationship instanceof BelongsToMany) {
             $relationshipQuery->select([
-                $relationship->getTable() . '.*',
-                $relationshipQuery->getModel()->getTable() . '.*',
+                $relationship->getTable().'.*',
+                $relationshipQuery->getModel()->getTable().'.*',
             ]);
         }
 
