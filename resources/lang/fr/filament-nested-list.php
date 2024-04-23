@@ -1,14 +1,14 @@
 <?php
 
 return [
-    'root' => 'Root',
+    'root' => 'Racine',
 
     /*
         |--------------------------------------------------------------------------
         | Buttons
         |--------------------------------------------------------------------------
     */
-    'button.save' => 'Save',
+    'button.save' => 'Sauvegarder',
 
     /*
         |--------------------------------------------------------------------------
@@ -21,5 +21,5 @@ return [
         | Message
         |--------------------------------------------------------------------------
     */
-    'actions.delete.confirmation.with_children' => 'Are you sure delete this record and its children?',
+    'actions.delete.confirmation.with_children' => 'Êtes-vous sûr de supprimer cet enregistrement et ses descendants ?',
 ];

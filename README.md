@@ -358,8 +358,6 @@ public function getTreeRecordIcon(?\Illuminate\Database\Eloquent\Model $record =
 }
 ```
 
-![tree-icon](https://github.com/solutionforest/filament-tree/assets/68525320/6a1ef719-9029-4e91-a20a-515a514c4326)
-
 #### Node collapsed state
 
 You can customize a collapsed state of the node. If you would like to show your tree initially collapsed you can use:

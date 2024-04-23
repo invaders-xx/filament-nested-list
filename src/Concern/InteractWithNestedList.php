@@ -123,7 +123,7 @@ trait InteractWithNestedList
                 ->send();
         }
         if ($needReload) {
-            $this->dispatch('refreshNestedList');
+            $this->dispatch('refreshNestedList')->self();
         }
     }
 

@@ -16,7 +16,7 @@ use InvadersXX\FilamentNestedList\Actions\EditAction;
 use InvadersXX\FilamentNestedList\Actions\ViewAction;
 use InvadersXX\FilamentNestedList\Pages\TreePage as BasePage;
 
-abstract class TreePage extends BasePage
+abstract class NestedListPage extends BasePage
 {
     use InteractsWithFormActions;
 

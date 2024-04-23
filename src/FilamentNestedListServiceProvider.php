@@ -2,7 +2,6 @@
 
 namespace InvadersXX\FilamentNestedList;
 
-use Filament\Support\Assets\Css;
 use Filament\Support\Assets\Js;
 use Filament\Support\Facades\FilamentAsset;
 use Spatie\LaravelPackageTools\Package;
@@ -18,13 +17,17 @@ class FilamentNestedListServiceProvider extends PackageServiceProvider
             ->hasConfigFile()
             ->hasViews()
             ->hasAssets()
-            ->hasTranslations();
+            ->hasTranslations()
+            ->hasCommands([
+                Commands\MakeNestedListPageCommand::class,
+                Commands\MakeNestedListWidgetCommand::class,
+            ]);
     }
 
     public function packageBooted(): void
     {
         FilamentAsset::register([
-            Css::make('filament-nested-list-styles', __DIR__ . '/../resources/dist/filament-nested-list.css'),
+            //Css::make('filament-nested-list-styles', __DIR__ . '/../resources/dist/filament-nested-list.css'),
             Js::make('filament-nested-list-scripts', __DIR__ . '/../resources/dist/filament-nested-list.js'),
         ], 'invaders-xx/filament-nested-list');
     }
