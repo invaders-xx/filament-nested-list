@@ -1,13 +1,8 @@
-> [!IMPORTANT]
-> Please note that we will only be updating to version 2.x, excluding any bug fixes.
+# Filament Nested List
 
-# Filament Tree
-
-Filament Tree is a plugin for Filament Admin that creates a model management page with a heritage tree structure view.
+Filament Nested List is a plugin for Filament Admin that creates a model management page with a heritage tree structure
+view.
 This plugin can be used to create menus and more.
-
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/solution-forest/filament-tree.svg?style=flat-square)](https://packagist.org/packages/solution-forest/filament-tree)
-[![Total Downloads](https://img.shields.io/packagist/dt/solution-forest/filament-tree.svg?style=flat-square)](https://packagist.org/packages/solution-forest/filament-tree)
 
 This plugin creates model management page with heritage tree structure view for Filament Admin. It could be used to
 create menu, etc.
@@ -17,7 +12,7 @@ create menu, etc.
 To install the package, run the following command:
 
 ```bash
-invaders-xx/filament-nested-list
+composer require invaders-xx/filament-nested-list
 ```
 
 > **Important: Need to publish assets after version 2.x**
@@ -37,7 +32,7 @@ Add the plugin's views to your `tailwind.config.js` file.
 
 ```js
 content: [
-    '<path-to-vendor>/invader-xx/filament-nested-list/resources/**/*.blade.php',
+    '<path-to-vendor>/invaders-xx/filament-nested-list/resources/**/*.blade.php',
 ]
 ```
 
@@ -380,7 +375,8 @@ public function getNodeCollapsedState(?\Illuminate\Database\Eloquent\Model $reco
 ### Pages
 
 This plugin enables you to create tree pages in the admin panel. To create a tree page for a model, use
-the `make:filament-tree-page` command. For example, to create a tree page for the ProductCategory model, you can run:
+the `make:filament-nested-list-page` command. For example, to create a tree page for the ProductCategory model, you can
+run:
 
 #### Create a Page
 
@@ -436,11 +432,13 @@ tracker.
 ## Credits
 
 - [David Vincent](https://github.com/invaders-xx/)
+- Inspired from [Solution Forest](https://github.com/solutionforest/filament-tree)
+- [hesamurai](https://github.com/hesamurai/nested-sort) for nested sort script
 - [All Contributors](../../contributors)
 
 ## License
 
 Filament Nested List is open-sourced software licensed under the [MIT license](LICENSE.md).
 
-## About Solution Forest
+## About Us
 
