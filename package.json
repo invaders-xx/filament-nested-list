@@ -1,0 +1,17 @@
+{
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev:styles": "npx tailwindcss -i resources/css/plugin.css -o resources/dist/filament-tree.css --watch",
+    "dev:scripts": "node bin/build.js --dev",
+    "build:styles": "npx tailwindcss -i resources/css/plugin.css -o resources/dist/filament-tree.css --minify && npm run purge",
+    "build:scripts": "node bin/build.js",
+    "purge": "filament-purge -i resources/dist/filament-tree.css -o resources/dist/filament-tree.css -v 3.x",
+    "dev": "npm-run-all --parallel dev:*",
+    "build": "npm-run-all build:*"
+  },
+  "devDependencies": {
+    "nested-sort": "^5.2.0",
+    "esbuild": "^0.20.2"
+  }
+}
