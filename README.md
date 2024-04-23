@@ -1,10 +1,12 @@
 # Filament Nested List
 
-Filament Nested List is a plugin for Filament Admin that creates a model management page with a heritage tree structure
+Filament Nested List is a plugin for Filament Admin that creates a model management page with a heritage nested list
+structure
 view.
 This plugin can be used to create menus and more.
 
-This plugin creates model management page with heritage tree structure view for Filament Admin. It could be used to
+This plugin creates model management page with heritage nested list structure view for Filament Admin. It could be used
+to
 create menu, etc.
 
 ## Installation
@@ -70,7 +72,7 @@ return [
 
 ### Prepare the database and model
 
-To use Filament Tree, follow these table structure conventions:
+To use Filament Nested List, follow these table structure conventions:
 
 > **Tip: The `parent_id` field must always default to -1!!!**
 
@@ -85,8 +87,7 @@ Schema::create('product_categories', function (Blueprint $table) {
 ```
 
 This plugin provides a convenient method called `nestedListColumns()` that you can use to add the required columns for
-the
-tree structure to your table more easily. Here's an example:
+the nested list structure to your table more easily. Here's an example:
 
 ```
 Schema::create('product_categories', function (Blueprint $table) {
@@ -96,7 +97,7 @@ Schema::create('product_categories', function (Blueprint $table) {
 });
 ```
 
-This will automatically add the required columns for the tree structure to your table.
+This will automatically add the required columns for the nested list structure to your table.
 
 The above table structure contains three required fields: `parent_id`, `order`, `title`, and other fields do not have
 any requirements.
@@ -175,7 +176,7 @@ class ProductCategory extends Model
 Filament provides a powerful feature that allows you to display widgets inside pages, below the header and above the
 footer. This can be useful for adding additional functionality to your resource pages.
 
-To create a Tree Widget and apply it to a resource page, you can follow these steps:
+To create a Nested List Widget and apply it to a resource page, you can follow these steps:
 
 #### 1. Creating a Filament Resource Page
 
@@ -187,7 +188,7 @@ php artisan make:filament-resource ProductCategory
 
 #### 2. Create Tree Widget
 
-Prepare the filament-tree Widget and show it in Resource page.
+Prepare the filament-nested-list Widget and show it in Resource page.
 
 ```php
 php artisan make:filament-nested-list-widget ProductCategoryWidget
@@ -228,7 +229,7 @@ class ProductCategoryWidget extends BaseWidget
 #### 3. Displaying a widget on a resource page
 
 Once you have created the widget, modify the `getHeaderWidgets()` or `getFooterWidgets()` methods of the resource page
-to show the tree view:
+to show the nested list view:
 
 ```php
 <?php
@@ -262,12 +263,13 @@ class ListProductCategories extends ListRecords
 
 ### Resources
 
-Filament allows you to create a custom pages for resources, you also can create a tree page that display hierarchical
+Filament allows you to create a custom pages for resources, you also can create a nested list page that display
+hierarchical
 data.
 
 #### Create a Page
 
-To create a tree page for resource, you can use:
+To create a nested list page for resource, you can use:
 
 ``` 
 php artisan make:filament-nested-list-page ProductCategoryNestedList --resource=ProductCategory
@@ -275,7 +277,7 @@ php artisan make:filament-nested-list-page ProductCategoryNestedList --resource=
 
 #### Register a Page to the resource
 
-You must register the tree page to a route in the static `getPages()` methods of your resource. For example:
+You must register the nested list page to a route in the static `getPages()` methods of your resource. For example:
 
 ``` php
 public static function getPages(): array
@@ -289,7 +291,8 @@ public static function getPages(): array
 
 #### Actions
 
-Define the available "actions" for the tree page using the `getActions()` and `getTreeActions()` methods of your page
+Define the available "actions" for the nested list page using the `getActions()` and `getTreeActions()` methods of your
+page
 class.
 
 The `getActions()` method defines actions that are displayed next to the page's heading:
@@ -307,7 +310,7 @@ The `getActions()` method defines actions that are displayed next to the page's 
     }
 ```
 
-The `getTreeActions()` method defines the actions that are displayed for each record in the tree. For example:
+The `getTreeActions()` method defines the actions that are displayed for each record in the nested list. For example:
 
 ```php
 use Filament\Pages\Actions\Action;
@@ -345,13 +348,15 @@ protected function hasViewAction(): bool
 
 ### Pages
 
-This plugin enables you to create tree pages in the admin panel. To create a tree page for a model, use
-the `make:filament-nested-list-page` command. For example, to create a tree page for the ProductCategory model, you can
+This plugin enables you to create tree pages in the admin panel. To create a nested list page for a model, use
+the `make:filament-nested-list-page` command. For example, to create a nested list page for the ProductCategory model,
+you can
 run:
 
 #### Create a Page
 
-> **Tip: Note that you should make sure the model contains the required columns or already uses the `ModelTree` trait**
+> **Tip: Note that you should make sure the model contains the required columns or already uses the `ModelNestedList`
+trait**
 
 ```php
 php artisan make:filament-nested-list-page ProductCategory --model=ProductCategory
@@ -359,7 +364,8 @@ php artisan make:filament-nested-list-page ProductCategory --model=ProductCatego
 
 #### Actions, Widgets and Icon for each record
 
-Once you've created the tree page, you can customize the available actions, widgets, and icon for each record. You can
+Once you've created the nested list page, you can customize the available actions, widgets, and icon for each record.
+You can
 use the same methods as for resource pages. See the [Resource Page](#resources)  for more information on how to
 customize actions, widgets, and icons.
 

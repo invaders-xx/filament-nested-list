@@ -4,31 +4,31 @@ namespace InvadersXX\FilamentNestedList\Concern;
 
 trait HasHeading
 {
-    protected ?string $title = null;
+    protected ?string $nestedListTitle = null;
 
-    protected bool $enableTitle = false;
+    protected bool $enableNestedListTitle = false;
 
-    public function nestedListTitle(string $title): static
+    public function nestedListTitle(string $nestedListTitle): static
     {
-        $this->title = $title;
+        $this->nestedListTitle = $nestedListTitle;
 
         return $this;
     }
 
     public function enableNestedListTitle(bool $condition): static
     {
-        $this->enableTitle = $condition;
+        $this->enableNestedListTitle = $condition;
 
         return $this;
     }
 
     public function getNestedListTitle(): ?string
     {
-        return $this->title;
+        return $this->nestedListTitle;
     }
 
     public function displayNestedListTitle(): bool
     {
-        return $this->enableTitle;
+        return $this->enableNestedListTitle;
     }
 }

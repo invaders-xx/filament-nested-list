@@ -33,7 +33,7 @@ class NestedList extends Field
 
     protected ?Closure $modifyRelationshipQueryUsing = null;
 
-    public function getState()
+    public function getState(): mixed
     {
         $state = parent::getState();
 
@@ -66,6 +66,11 @@ class NestedList extends Field
     public function getNodeLabel(string $uuid): ?string
     {
         return data_get($this->getChildComponentContainer($uuid)->getRawState(), $this->getTitleColumn() ?? 'title');
+    }
+
+    public function getTitleColumn(): ?string
+    {
+        return $this->evaluate($this->titleColumn);
     }
 
     public function nodes(array|Arrayable $nodes): static
@@ -274,11 +279,6 @@ class NestedList extends Field
     public function getKeyColumn(): ?string
     {
         return $this->evaluate($this->keyColumn);
-    }
-
-    public function getTitleColumn(): ?string
-    {
-        return $this->evaluate($this->titleColumn);
     }
 
     public function getChildrenColumn(): ?string
