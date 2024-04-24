@@ -1,3 +1,5 @@
+![invaders-xx-nested-list](https://github.com/invaders-xx/filament-nested-list/assets/604907/f74b0dfa-4722-468b-afea-fcd566e1d331)
+
 # Filament Nested List
 
 Filament Nested List is a plugin for Filament Admin that creates a model management page with a heritage nested list
