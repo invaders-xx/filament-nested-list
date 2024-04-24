@@ -74,7 +74,7 @@ class MakeNestedListPageCommand extends Command
     {
         $resourceInput = $this->option('resource') ?? $this->ask('(Optional) Resource (e.g. `UserResource`)');
 
-        if ($resourceInput !== null) {
+        if (null !== $resourceInput) {
             $resource = (string) Str::of($resourceInput)
                 ->studly()
                 ->trim('/')
@@ -98,16 +98,16 @@ class MakeNestedListPageCommand extends Command
 
         $namespace = config('filament.pages.namespace', 'App\\Filament\\Pages');
         $resourceNamespace = config('filament.resources.namespace', 'App\\Filament\\Resources');
-        $pageNamespace = Str::of($this->page)->contains('\\') ?
-            (string) Str::of($this->page)->beforeLast('\\') :
-            '';
+        $pageNamespace = Str::of($this->page)->contains('\\')
+            ? (string) Str::of($this->page)->beforeLast('\\')
+            : '';
 
         $resourceClass = $this->resourceClass;
         $stub = $this->getStub();
 
         $path = (string) Str::of($this->pageClass)
             ->prepend('/')
-            ->prepend($resourceClass === null ? $path : "{$resourcePath}\\{$resourceClass}\\Pages\\")
+            ->prepend(null === $resourceClass ? $path : "{$resourcePath}\\{$resourceClass}\\Pages\\")
             ->replace('\\', '/')
             ->replace('//', '/')
             ->append('.php');
@@ -116,7 +116,7 @@ class MakeNestedListPageCommand extends Command
             return false;
         }
 
-        if ($resourceClass === null) {
+        if (null === $resourceClass) {
             $model = (string) Str::of($this->argument('name') ?? $this->askRequired('Model (e.g. `User`)', 'name'))
                 ->studly()
                 ->trim('/')
@@ -133,13 +133,13 @@ class MakeNestedListPageCommand extends Command
 
             $this->copyStubToApp($stub, $path, [
                 'class' => $this->pageClass,
-                'namespace' => $namespace.($pageNamespace !== '' ? "\\{$pageNamespace}" : ''),
+                'namespace' => $namespace . ('' !== $pageNamespace ? "\\{$pageNamespace}" : ''),
                 'modelClass' => $modelClass == $this->pageClass ? 'NestedListPageModel' : $modelClass,
                 'model' => $model == $this->pageClass ? "{$model} as NestedListPageModel" : $model,
             ]);
         } else {
             $this->copyStubToApp($stub, $path, [
-                'namespace' => "{$resourceNamespace}\\{$resourceClass}\\Pages".($pageNamespace !== '' ? "\\{$pageNamespace}" : ''),
+                'namespace' => "{$resourceNamespace}\\{$resourceClass}\\Pages" . ('' !== $pageNamespace ? "\\{$pageNamespace}" : ''),
                 'resource' => $this->resourceClass == $this->pageClass ? "{$resourceNamespace}\\{$resourceClass} as NestedListPageResource" : "{$resourceNamespace}\\{$resourceClass}",
                 'class' => $this->pageClass,
                 'resourceClass' => $resourceClass == $this->pageClass ? 'NestedListPageResource' : $resourceClass,

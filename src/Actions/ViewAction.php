@@ -11,18 +11,6 @@ class ViewAction extends Action
 {
     protected ?Closure $mutateRecordDataUsing = null;
 
-    public static function getDefaultName(): ?string
-    {
-        return 'view';
-    }
-
-    public function mutateRecordDataUsing(?Closure $callback): static
-    {
-        $this->mutateRecordDataUsing = $callback;
-
-        return $this;
-    }
-
     protected function setUp(): void
     {
         parent::setUp();
@@ -56,5 +44,17 @@ class ViewAction extends Action
 
         $this->action(static function (): void {
         });
+    }
+
+    public static function getDefaultName(): ?string
+    {
+        return 'view';
+    }
+
+    public function mutateRecordDataUsing(?Closure $callback): static
+    {
+        $this->mutateRecordDataUsing = $callback;
+
+        return $this;
     }
 }

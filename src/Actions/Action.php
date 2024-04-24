@@ -85,6 +85,11 @@ class Action extends BaseAction implements Groupable, HasNestedList, HasRecord
             ->record($this->getRecord());
     }
 
+    public function getModel(): string
+    {
+        return $this->getCustomModel() ?? $this->getLivewire()->getModel();
+    }
+
     /**
      * @return array<mixed>
      */
@@ -121,10 +126,5 @@ class Action extends BaseAction implements Groupable, HasNestedList, HasRecord
             'nestedList' => [$this->getNestedList()],
             default => parent::resolveDefaultClosureDependencyForEvaluationByName($parameterName),
         };
-    }
-
-    public function getModel(): string
-    {
-        return $this->getCustomModel() ?? $this->getLivewire()->getModel();
     }
 }

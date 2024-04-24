@@ -15,30 +15,6 @@ class EditAction extends Action
 
     protected ?Closure $mutateFormDataBeforeSaveUsing = null;
 
-    public static function getDefaultName(): ?string
-    {
-        return 'edit';
-    }
-
-    public function mutateRecordDataUsing(?Closure $callback): static
-    {
-        $this->mutateRecordDataUsing = $callback;
-
-        return $this;
-    }
-
-    public function mutateFormDataBeforeSaveUsing(?Closure $callback): static
-    {
-        $this->mutateFormDataBeforeSaveUsing = $callback;
-
-        return $this;
-    }
-
-    public function getMutateFormDataBeforeSave(): ?Closure
-    {
-        return $this->mutateFormDataBeforeSaveUsing;
-    }
-
     protected function setUp(): void
     {
         parent::setUp();
@@ -78,5 +54,29 @@ class EditAction extends Action
 
             $this->success();
         });
+    }
+
+    public static function getDefaultName(): ?string
+    {
+        return 'edit';
+    }
+
+    public function mutateRecordDataUsing(?Closure $callback): static
+    {
+        $this->mutateRecordDataUsing = $callback;
+
+        return $this;
+    }
+
+    public function mutateFormDataBeforeSaveUsing(?Closure $callback): static
+    {
+        $this->mutateFormDataBeforeSaveUsing = $callback;
+
+        return $this;
+    }
+
+    public function getMutateFormDataBeforeSave(): ?Closure
+    {
+        return $this->mutateFormDataBeforeSaveUsing;
     }
 }

@@ -8,6 +8,15 @@ use Orchestra\Testbench\TestCase as Orchestra;
 
 class TestCase extends Orchestra
 {
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        Factory::guessFactoryNamesUsing(
+            fn (string $modelName) => 'InvadersXX\\FilamentNestedList\\Database\\Factories\\' . class_basename($modelName) . 'Factory'
+        );
+    }
+
     public function getEnvironmentSetUp($app)
     {
         config()->set('database.default', 'testing');
@@ -16,15 +25,6 @@ class TestCase extends Orchestra
         $migration = include __DIR__.'/../database/migrations/create_filament-nested-list_table.php.stub';
         $migration->up();
         */
-    }
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        Factory::guessFactoryNamesUsing(
-            fn (string $modelName) => 'InvadersXX\\FilamentNestedList\\Database\\Factories\\'.class_basename($modelName).'Factory'
-        );
     }
 
     protected function getPackageProviders($app)

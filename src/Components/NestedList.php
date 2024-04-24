@@ -17,7 +17,7 @@ class NestedList extends ViewComponent
 
     protected string $view = 'filament-nested-list::components.nested-list.index';
 
-    protected string $viewIdentifier = 'tree';
+    protected string $viewIdentifier = 'nestedList';
 
     protected int $maxDepth = 999;
 

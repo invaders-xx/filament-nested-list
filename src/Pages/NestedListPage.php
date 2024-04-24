@@ -15,9 +15,9 @@ abstract class NestedListPage extends Page implements HasNestedList
 {
     use InteractWithNestedList;
 
-    protected static string $view = 'filament-nested-list::pages.tree';
+    protected static string $view = 'filament-nested-list::pages.nested-list';
 
-    protected static string $viewIdentifier = 'tree';
+    protected static string $viewIdentifier = 'nestedList';
 
     protected static string $model;
 
@@ -28,9 +28,14 @@ abstract class NestedListPage extends Page implements HasNestedList
         return static::$maxDepth;
     }
 
-    public static function tree(NestedList $tree): NestedList
+    public static function nestedList(NestedList $nestedList): NestedList
     {
-        return $tree;
+        return $nestedList;
+    }
+
+    public function getModel(): string
+    {
+        return static::$model ?? class_basename(static::class);
     }
 
     protected function configureAction(FilamentActionsAction $action): void
@@ -75,11 +80,6 @@ abstract class NestedListPage extends Page implements HasNestedList
         static::$model = $model;
 
         return $this;
-    }
-
-    public function getModel(): string
-    {
-        return static::$model ?? class_basename(static::class);
     }
 
     protected function afterConfiguredCreateAction(CreateAction $action): CreateAction

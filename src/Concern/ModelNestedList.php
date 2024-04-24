@@ -21,10 +21,10 @@ trait ModelNestedList
     public static function bootModelNestedList()
     {
         static::saving(function (Model $model) {
-            if (empty($model->{$model->determineParentColumnName()}) || $model->{$model->determineParentColumnName()} === -1) {
+            if (empty($model->{$model->determineParentColumnName()}) || -1 === $model->{$model->determineParentColumnName()}) {
                 $model->{$model->determineParentColumnName()} = static::defaultParentKey();
             }
-            if (empty($model->{$model->determineOrderColumnName()}) || $model->{$model->determineOrderColumnName()} === 0) {
+            if (empty($model->{$model->determineOrderColumnName()}) || 0 === $model->{$model->determineOrderColumnName()}) {
                 $model->setHighestOrderNumber();
             }
         });
@@ -39,29 +39,9 @@ trait ModelNestedList
         });
     }
 
-    public function determineParentColumnName(): string
-    {
-        return Utils::parentColumnName();
-    }
-
     public static function defaultParentKey()
     {
         return Utils::defaultParentId();
-    }
-
-    public function determineOrderColumnName(): string
-    {
-        return Utils::orderColumnName();
-    }
-
-    public function setHighestOrderNumber(): void
-    {
-        $this->{$this->determineOrderColumnName()} = $this->getHighestOrderNumber() + 1;
-    }
-
-    public function getHighestOrderNumber(): int
-    {
-        return (int) $this->buildSortQuery()->where($this->determineParentColumnName(), $this->{$this->determineParentColumnName()})->max($this->determineOrderColumnName());
     }
 
     public static function buildSortQuery(): Builder
@@ -100,43 +80,17 @@ trait ModelNestedList
         return $result;
     }
 
-    public function determineTitleColumnName(): string
-    {
-        return Utils::titleColumnName();
-    }
-
     public static function defaultChildrenKeyName(): string
     {
         return Utils::defaultChildrenKeyName();
     }
 
     /**
-     * @return static[]|Collection
+     * @return Collection|static[]
      */
     public static function allNodes()
     {
         return static::buildSortQuery()->get();
-    }
-
-    private static function buildNestedListNodeItem(array &$final, array $item, string $primaryKeyName, string $titleKeyName, string $childrenKeyName): void
-    {
-        if (! isset($item[$primaryKeyName])) {
-            throw new InvalidArgumentException("Unset '{$primaryKeyName}' primary key.");
-        }
-        $pk = data_get($item, $primaryKeyName);
-        $name = data_get($item, $titleKeyName);
-        $children = [];
-
-        if (count($item[$childrenKeyName])) {
-            foreach ($item[$childrenKeyName] as $child) {
-                static::buildNestedListNodeItem($children, $child, $primaryKeyName, $titleKeyName, $childrenKeyName);
-            }
-        }
-        $final[] = [
-            $primaryKeyName => $pk,
-            $titleKeyName => $name,
-            $childrenKeyName => $children,
-        ];
     }
 
     /**
@@ -172,35 +126,34 @@ trait ModelNestedList
         return $result;
     }
 
-    private static function buildSelectArrayItem(array &$final, array $item, string $primaryKeyName, string $titleKeyName, string $childrenKeyName, int $depth, ?int $maxDepth = null): void
-    {
-        if (! isset($item[$primaryKeyName])) {
-            throw new InvalidArgumentException("Unset '{$primaryKeyName}' primary key.");
-        }
-
-        if ($maxDepth && $depth > $maxDepth) {
-            return;
-        }
-
-        static::handleTranslatable($item);
-
-        $key = $item[$primaryKeyName];
-        $title = isset($item[$titleKeyName]) ? $item[$titleKeyName] : $item[$primaryKeyName];
-        if (! is_string($title)) {
-            $title = (string) $title;
-        }
-        $final[$key] = Str::padLeft($title, (str($title)->length() + ($depth * 3)), '-');
-
-        if (count($item[$childrenKeyName])) {
-            foreach ($item[$childrenKeyName] as $child) {
-                static::buildSelectArrayItem($final, $child, $primaryKeyName, $titleKeyName, $childrenKeyName, $depth + 1, $maxDepth);
-            }
-        }
-    }
-
     public static function handleTranslatable(array &$final): void
     {
         static::traitHandleTranslatable($final, static::class);
+    }
+
+    public function determineParentColumnName(): string
+    {
+        return Utils::parentColumnName();
+    }
+
+    public function determineOrderColumnName(): string
+    {
+        return Utils::orderColumnName();
+    }
+
+    public function setHighestOrderNumber(): void
+    {
+        $this->{$this->determineOrderColumnName()} = $this->getHighestOrderNumber() + 1;
+    }
+
+    public function getHighestOrderNumber(): int
+    {
+        return (int) $this->buildSortQuery()->where($this->determineParentColumnName(), $this->{$this->determineParentColumnName()})->max($this->determineOrderColumnName());
+    }
+
+    public function determineTitleColumnName(): string
+    {
+        return Utils::titleColumnName();
     }
 
     public function initializeModelTree()
@@ -242,11 +195,11 @@ trait ModelNestedList
     /**
      * Format all nodes as tree.
      *
-     * @param  array|Collection|null  $nodes
+     * @param null|array|Collection $nodes
      */
     public function toTree($nodes = null): array
     {
-        if ($nodes === null) {
+        if (null === $nodes) {
             $nodes = static::allNodes();
         }
 
@@ -256,5 +209,52 @@ trait ModelNestedList
             primaryKeyName: $this->getKeyName(),
             parentKeyName: $this->determineParentColumnName()
         );
+    }
+
+    private static function buildNestedListNodeItem(array &$final, array $item, string $primaryKeyName, string $titleKeyName, string $childrenKeyName): void
+    {
+        if (! isset($item[$primaryKeyName])) {
+            throw new InvalidArgumentException("Unset '{$primaryKeyName}' primary key.");
+        }
+        $pk = data_get($item, $primaryKeyName);
+        $name = data_get($item, $titleKeyName);
+        $children = [];
+
+        if (count($item[$childrenKeyName])) {
+            foreach ($item[$childrenKeyName] as $child) {
+                static::buildNestedListNodeItem($children, $child, $primaryKeyName, $titleKeyName, $childrenKeyName);
+            }
+        }
+        $final[] = [
+            $primaryKeyName => $pk,
+            $titleKeyName => $name,
+            $childrenKeyName => $children,
+        ];
+    }
+
+    private static function buildSelectArrayItem(array &$final, array $item, string $primaryKeyName, string $titleKeyName, string $childrenKeyName, int $depth, ?int $maxDepth = null): void
+    {
+        if (! isset($item[$primaryKeyName])) {
+            throw new InvalidArgumentException("Unset '{$primaryKeyName}' primary key.");
+        }
+
+        if ($maxDepth && $depth > $maxDepth) {
+            return;
+        }
+
+        static::handleTranslatable($item);
+
+        $key = $item[$primaryKeyName];
+        $title = $item[$titleKeyName] ?? $item[$primaryKeyName];
+        if (! is_string($title)) {
+            $title = (string) $title;
+        }
+        $final[$key] = Str::padLeft($title, (str($title)->length() + ($depth * 3)), '-');
+
+        if (count($item[$childrenKeyName])) {
+            foreach ($item[$childrenKeyName] as $child) {
+                static::buildSelectArrayItem($final, $child, $primaryKeyName, $titleKeyName, $childrenKeyName, $depth + 1, $maxDepth);
+            }
+        }
     }
 }

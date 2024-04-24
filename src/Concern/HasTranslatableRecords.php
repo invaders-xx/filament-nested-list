@@ -25,6 +25,15 @@ trait HasTranslatableRecords
         return $records;
     }
 
+    protected function resolveNestedListRecord(?string $key): ?Model
+    {
+        $record = $this->traitResolveTreeRecord($key);
+
+        $this->updateModelTranslation($record);
+
+        return $record;
+    }
+
     private function updateModelTranslation(?Model $record = null): void
     {
         if ($record) {
@@ -37,25 +46,13 @@ trait HasTranslatableRecords
                 if (is_array($item) || $item instanceof Arrayable) {
                     foreach ($item as $relationRecord) {
                         if ($relationRecord instanceof Model) {
-
                             $this->updateModelTranslation($relationRecord);
                         }
                     }
-
                 } elseif (! empty($item)) {
-
                     $this->updateModelTranslation($item);
                 }
             }
         }
-    }
-
-    protected function resolveNestedListRecord(?string $key): ?Model
-    {
-        $record = $this->traitResolveTreeRecord($key);
-
-        $this->updateModelTranslation($record);
-
-        return $record;
     }
 }

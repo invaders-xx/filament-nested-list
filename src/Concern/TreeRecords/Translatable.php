@@ -19,12 +19,10 @@ trait Translatable
 
     public function hydrateTranslatable()
     {
-
     }
 
     public function dehydrateTranslatable()
     {
-
     }
 
     public function getActiveLocale(): ?string

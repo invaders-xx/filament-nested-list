@@ -10,8 +10,6 @@ interface HasNestedList
 {
     public static function nestedList(NestedList $tree): NestedList;
 
-    public function getModel(): string;
-
     public function updateNestedList(?array $list = null): void;
 
     public function getNestedListRecordTitle(?Model $record = null): string;

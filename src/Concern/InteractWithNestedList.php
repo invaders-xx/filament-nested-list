@@ -39,11 +39,6 @@ trait InteractWithNestedList
         $this->hasMounted = true;
     }
 
-    protected function getNestedList(): NestedList
-    {
-        return NestedList::make($this);
-    }
-
     public function mountInteractsWithNestedList(): void
     {
     }
@@ -60,11 +55,6 @@ trait InteractWithNestedList
     public function getRecordKey(?Model $record): ?string
     {
         return $this->getCachedNestedList()->getRecordKey($record);
-    }
-
-    protected function getCachedNestedList(): NestedList
-    {
-        return $this->nestedList;
     }
 
     public function getParentKey(?Model $record): ?string
@@ -110,11 +100,21 @@ trait InteractWithNestedList
         if ($needReload) {
             Notification::make()
                 ->success()
-                ->title(__('filament-actions::edit.single.modal.actions.save.label'))
+                ->title(__('filament-actions::edit.single.notifications.saved.title'))
                 ->send();
         }
         if ($needReload) {
             $this->dispatch('refreshNestedList')->self();
         }
+    }
+
+    protected function getNestedList(): NestedList
+    {
+        return NestedList::make($this);
+    }
+
+    protected function getCachedNestedList(): NestedList
+    {
+        return $this->nestedList;
     }
 }

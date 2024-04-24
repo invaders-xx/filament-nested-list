@@ -186,7 +186,7 @@ To create a resources page, run the following command:
 php artisan make:filament-resource ProductCategory
 ```
 
-#### 2. Create Tree Widget
+#### 2. Create Nested List Widget
 
 Prepare the filament-nested-list Widget and show it in Resource page.
 
@@ -260,114 +260,6 @@ class ListProductCategories extends ListRecords
     }
 }
 ```
-
-### Resources
-
-Filament allows you to create a custom pages for resources, you also can create a nested list page that display
-hierarchical
-data.
-
-#### Create a Page
-
-To create a nested list page for resource, you can use:
-
-``` 
-php artisan make:filament-nested-list-page ProductCategoryNestedList --resource=ProductCategory
-```
-
-#### Register a Page to the resource
-
-You must register the nested list page to a route in the static `getPages()` methods of your resource. For example:
-
-``` php
-public static function getPages(): array
-{
-    return [
-        // ...
-        'tree-list' => Pages\ProductCategoryNestedList::route('/tree-list'),
-    ];
-}
-```
-
-#### Actions
-
-Define the available "actions" for the nested list page using the `getActions()` and `getTreeActions()` methods of your
-page
-class.
-
-The `getActions()` method defines actions that are displayed next to the page's heading:
-
-```php
-    use Filament\Pages\Actions\CreateAction;
-
-    protected function getActions(): array
-    {
-        return [
-            CreateAction::make(),
-            // SAMPLE CODE, CAN DELETE
-            //\Filament\Pages\Actions\Action::make('sampleAction'),
-        ];
-    }
-```
-
-The `getTreeActions()` method defines the actions that are displayed for each record in the nested list. For example:
-
-```php
-use Filament\Pages\Actions\Action;
-
-protected function getTreeActions(): array
-{
-    return [
-        Actions\ViewAction::make(),
-        Actions\EditAction::make(),
-        Actions\DeleteAction::make(),
-    ];
-}
-
-```
-
-Alternatively, you can use the `hasDeleteAction()`, `hasEditAction()`, and `hasViewAction()` methods to customize each
-action individually.
-
-``` php
-protected function hasDeleteAction(): bool
-{
-    return false;
-}
-
-protected function hasEditAction(): bool
-{
-    return true;
-}
-
-protected function hasViewAction(): bool
-{
-    return false;
-}
-```
-
-### Pages
-
-This plugin enables you to create tree pages in the admin panel. To create a nested list page for a model, use
-the `make:filament-nested-list-page` command. For example, to create a nested list page for the ProductCategory model,
-you can
-run:
-
-#### Create a Page
-
-> **Tip: Note that you should make sure the model contains the required columns or already uses the `ModelNestedList`
-trait**
-
-```php
-php artisan make:filament-nested-list-page ProductCategory --model=ProductCategory
-```
-
-#### Actions, Widgets and Icon for each record
-
-Once you've created the nested list page, you can customize the available actions, widgets, and icon for each record.
-You can
-use the same methods as for resource pages. See the [Resource Page](#resources)  for more information on how to
-customize actions, widgets, and icons.
 
 ### Publishing Views
 

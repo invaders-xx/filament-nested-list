@@ -33,6 +33,29 @@ class NestedList extends Field
 
     protected ?Closure $modifyRelationshipQueryUsing = null;
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->default([]);
+
+        $this->afterStateHydrated(static function (NestedList $component, $state) {
+            if (is_array($state)) {
+                return;
+            }
+
+            $component->state([]);
+        });
+
+        $this->dehydrateStateUsing(static function (NestedList $component, $state) {
+            if (! is_array($state)) {
+                $state = [];
+            }
+
+            return $component->formatNodeState($state, $component->getOptions());
+        });
+    }
+
     public function getState(): mixed
     {
         $state = parent::getState();
@@ -46,21 +69,6 @@ class NestedList extends Field
         } catch (Exception $e) {
             return [];
         }
-    }
-
-    private function getNodeState(array $state): array
-    {
-        $final = [];
-
-        foreach ($state as $key => $childOrKey) {
-            if (is_array($childOrKey)) {
-                $final = array_merge($final, [$key], $this->getNodeState($childOrKey));
-            } else {
-                $final = array_merge($final, [$childOrKey]);
-            }
-        }
-
-        return $final;
     }
 
     public function getNodeLabel(string $uuid): ?string
@@ -153,29 +161,6 @@ class NestedList extends Field
         );
     }
 
-    protected function getStateFromRelatedRecords(Collection $records): array
-    {
-        if (! $records->count()) {
-            return [];
-        }
-
-        $activeLocale = $this->getLivewire()->getActiveFormLocale();
-
-        return $records
-            ->map(function (Model $record) use ($activeLocale): array {
-                $state = $record->attributesToArray();
-
-                if ($activeLocale && method_exists($record, 'getTranslatableAttributes') && method_exists($record, 'getTranslation')) {
-                    foreach ($record->getTranslatableAttributes() as $attribute) {
-                        $state[$attribute] = $record->getTranslation($attribute, $activeLocale);
-                    }
-                }
-
-                return $state;
-            })
-            ->toArray();
-    }
-
     public function getCachedExistingRecords(): Collection
     {
         if ($this->cachedExistingRecords) {
@@ -187,8 +172,8 @@ class NestedList extends Field
 
         if ($relationship instanceof BelongsToMany) {
             $relationshipQuery->select([
-                $relationship->getTable().'.*',
-                $relationshipQuery->getModel()->getTable().'.*',
+                $relationship->getTable() . '.*',
+                $relationshipQuery->getModel()->getTable() . '.*',
             ]);
         }
 
@@ -224,56 +209,9 @@ class NestedList extends Field
         return $this->evaluate($this->relationship);
     }
 
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        $this->default([]);
-
-        $this->afterStateHydrated(static function (NestedList $component, $state) {
-            if (is_array($state)) {
-                return;
-            }
-
-            $component->state([]);
-        });
-
-        $this->dehydrateStateUsing(static function (NestedList $component, $state) {
-            if (! is_array($state)) {
-                $state = [];
-            }
-
-            return $component->formatNodeState($state, $component->getOptions());
-        });
-    }
-
-    private function formatNodeState(array $state, array $options): array
-    {
-        $final = [];
-
-        foreach ($options as $value => $item) {
-            if (in_array($value, $state)) {
-                $final[strval($value)] = $this->formatNodeState($state, data_get($item, 'children', []));
-            }
-        }
-
-        return $final;
-    }
-
     public function getOptions(): array
     {
         return $this->getNodeOptions($this->getNodes());
-    }
-
-    private function getNodeOptions(array $options): array
-    {
-        return collect($options)
-            ->keyBy(fn ($item) => strval(data_get($item, $this->getKeyColumn() ?? 'id')))
-            ->map(fn (array $item) => [
-                'label' => data_get($item, $this->getTitleColumn() ?? 'title'),
-                'children' => $this->getNodeOptions(data_get($item, $this->getChildrenColumn() ?? 'children') ?? []),
-            ])
-            ->toArray();
     }
 
     public function getKeyColumn(): ?string
@@ -291,8 +229,70 @@ class NestedList extends Field
         return $this->nodes ?? [];
     }
 
+    protected function getStateFromRelatedRecords(Collection $records): array
+    {
+        if (! $records->count()) {
+            return [];
+        }
+
+        $activeLocale = $this->getLivewire()->getActiveFormLocale();
+
+        return $records
+            ->map(function (Model $record) use ($activeLocale): array {
+                $state = $record->attributesToArray();
+
+                if ($activeLocale && method_exists($record, 'getTranslatableAttributes') && method_exists($record, 'getTranslation')) {
+                    foreach ($record->getTranslatableAttributes() as $attribute) {
+                        $state[$attribute] = $record->getTranslation($attribute, $activeLocale);
+                    }
+                }
+
+                return $state;
+            })
+            ->toArray();
+    }
+
     protected function getRelatedModel(): string
     {
         return $this->getRelationship()->getModel()::class;
+    }
+
+    private function getNodeState(array $state): array
+    {
+        $final = [];
+
+        foreach ($state as $key => $childOrKey) {
+            if (is_array($childOrKey)) {
+                $final = array_merge($final, [$key], $this->getNodeState($childOrKey));
+            } else {
+                $final = array_merge($final, [$childOrKey]);
+            }
+        }
+
+        return $final;
+    }
+
+    private function formatNodeState(array $state, array $options): array
+    {
+        $final = [];
+
+        foreach ($options as $value => $item) {
+            if (in_array($value, $state)) {
+                $final[strval($value)] = $this->formatNodeState($state, data_get($item, 'children', []));
+            }
+        }
+
+        return $final;
+    }
+
+    private function getNodeOptions(array $options): array
+    {
+        return collect($options)
+            ->keyBy(fn ($item) => strval(data_get($item, $this->getKeyColumn() ?? 'id')))
+            ->map(fn (array $item) => [
+                'label' => data_get($item, $this->getTitleColumn() ?? 'title'),
+                'children' => $this->getNodeOptions(data_get($item, $this->getChildrenColumn() ?? 'children') ?? []),
+            ])
+            ->toArray();
     }
 }

@@ -28,7 +28,7 @@ class MakeNestedListWidgetCommand extends Command
 
         $resourceInput = $this->option('resource') ?? $this->ask('(Optional) Resource (e.g. `ProductCategoryResource`)');
 
-        if ($resourceInput !== null) {
+        if (null !== $resourceInput) {
             $resource = (string) Str::of($resourceInput)
                 ->studly()
                 ->trim('/')
@@ -50,13 +50,13 @@ class MakeNestedListWidgetCommand extends Command
             ->trim(' ')
             ->replace('/', '\\');
         $widgetClass = (string) Str::of($widget)->afterLast('\\');
-        $widgetNamespace = Str::of($widget)->contains('\\') ?
-            (string) Str::of($widget)->beforeLast('\\') :
-            '';
+        $widgetNamespace = Str::of($widget)->contains('\\')
+            ? (string) Str::of($widget)->beforeLast('\\')
+            : '';
 
         $path = (string) Str::of($widget)
             ->prepend('/')
-            ->prepend($resource === null ? $path : "{$resourcePath}\\{$resource}\\Widgets\\")
+            ->prepend(null === $resource ? $path : "{$resourcePath}\\{$resource}\\Widgets\\")
             ->replace('\\', '/')
             ->replace('//', '/')
             ->append('.php');
@@ -76,14 +76,14 @@ class MakeNestedListWidgetCommand extends Command
 
         $this->copyStubToApp('NestedListWidget', $path, [
             'class' => $widgetClass,
-            'namespace' => filled($resource) ? "{$resourceNamespace}\\{$resource}\\Widgets".($widgetNamespace !== '' ? "\\{$widgetNamespace}" : '') : $namespace.($widgetNamespace !== '' ? "\\{$widgetNamespace}" : ''),
+            'namespace' => filled($resource) ? "{$resourceNamespace}\\{$resource}\\Widgets" . ('' !== $widgetNamespace ? "\\{$widgetNamespace}" : '') : $namespace . ('' !== $widgetNamespace ? "\\{$widgetNamespace}" : ''),
             'model' => $model == $widgetClass ? "{$model} as TreeWidgetModel" : $model,
             'modelClass' => $modelClass == $widgetClass ? 'TreeWidgetModel' : $modelClass,
         ]);
 
         $this->info("Successfully created {$widget} !");
 
-        if ($resource !== null) {
+        if (null !== $resource) {
             $this->info("Make sure to register the widget in `{$resourceClass}::getWidgets()`, and then again in `getHeaderWidgets()` or `getFooterWidgets()` of any `{$resourceClass}` page.");
         }
 

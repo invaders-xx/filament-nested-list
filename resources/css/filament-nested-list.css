@@ -1,25 +1,25 @@
+/*
 .nested-sort {
     @apply p-0;
 }
-
+*/
 .nested-sort--enabled li {
-    @apply cursor-move;
+    @apply hover:cursor-move;
 }
 
+/*
 .nested-sort li {
-    @apply mt-0 mb-0 mr-5 p-2 bg-gray-200 dark:bg-gray-800/50;
+    @apply mr-5 p-2;
 }
 
 .nested-sort li ol {
     @apply p-0 mt-5;
 }
-
-/* ns-dragged is the class name of the item which is being dragged */
+*/
 .nested-sort .ns-dragged {
     @apply border border-danger-500;
 }
 
-/* ns-targeted is the class name of the item on which the dragged item is hovering */
 .nested-sort .ns-targeted {
     @apply border border-success-500;
 }
