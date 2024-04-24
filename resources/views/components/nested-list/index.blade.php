@@ -1,11 +1,11 @@
 @php
     use Filament\Support\Facades\FilamentAsset;
-    use Illuminate\Support\Js;
     $containerKey = 'filament_tree_container_' . $this->getId();
     $maxDepth = $getMaxDepth() ?? -1;
 @endphp
 <div>
     <div wire:ignore
+         x-load-css="[@js(FilamentAsset::getStyleHref('filament-nested-list', package: 'invaders-xx/filament-nested-list'))]"
          x-data="nestedList(JSON.parse('{{ json_encode($this->getNestedListData()) }}'), {{ $maxDepth }})">
         <x-filament::section :heading="($this->displayNestedListTitle() ?? false) ? $this->getNestedListTitle() : null">
             <menu class="mb-4 flex gap-2" id="nestable-menu">

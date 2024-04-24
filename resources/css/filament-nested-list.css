@@ -1,25 +1,25 @@
-/*
-.nested-sort {
+.fi-nested-list {
     @apply p-0;
 }
-*/
-.nested-sort--enabled li {
-    @apply hover:cursor-move;
+
+.fi-nested-list--enabled li {
+    @apply cursor-move;
 }
 
-/*
-.nested-sort li {
-    @apply mr-5 p-2;
+.fi-nested-list-item {
+    @apply mt-0 mb-0 mr-5 p-2 border border-gray-300 dark:border-gray-700 bg-gray-200 dark:bg-gray-800/50;
 }
 
-.nested-sort li ol {
-    @apply p-0 mt-5;
-}
-*/
-.nested-sort .ns-dragged {
-    @apply border border-danger-500;
+.fi-nested-list-item ol {
+    @apply p-0 mt-2;
 }
 
-.nested-sort .ns-targeted {
+/* ns-dragged is the class name of the item which is being dragged */
+.fi-nested-list .ns-dragged {
+    @apply border-warning-500 !important;
+}
+
+/* ns-targeted is the class name of the item on which the dragged item is hovering */
+.fi-nested-list .ns-targeted {
     @apply border border-success-500;
 }
