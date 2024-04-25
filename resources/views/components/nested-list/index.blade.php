@@ -2,11 +2,22 @@
     use Filament\Support\Facades\FilamentAsset;
     $containerKey = 'filament_tree_container_' . $this->getId();
     $maxDepth = $getMaxDepth() ?? -1;
+    ray($this->getNestedListData());
 @endphp
-<div>
+
+<div x-data="{}"
+     x-load-css="[@js(FilamentAsset::getStyleHref('filament-nested-list', package: 'invaders-xx/filament-nested-list'))]"
+>
     <div wire:ignore
-         x-load-css="[@js(FilamentAsset::getStyleHref('filament-nested-list', package: 'invaders-xx/filament-nested-list'))]"
-         x-data="nestedList(JSON.parse('{{ json_encode($this->getNestedListData()) }}'), {{ $maxDepth }})">
+         x-ignore
+         ax-load
+         ax-load-src="{{ FilamentAsset::getAlpineComponentSrc('filament-nested-list', 'invaders-xx/filament-nested-list') }}"
+         x-data="nestedList({
+             items: @js($this->getNestedListData()),
+             maxDepth: {{ $maxDepth }},
+             selector: '#nestedList'
+         })"
+    >
         <x-filament::section :heading="($this->displayNestedListTitle() ?? false) ? $this->getNestedListTitle() : null">
             <menu class="mb-4 flex gap-2" id="nestable-menu">
                 <x-filament::button

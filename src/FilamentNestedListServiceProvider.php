@@ -2,8 +2,8 @@
 
 namespace InvadersXX\FilamentNestedList;
 
+use Filament\Support\Assets\AlpineComponent;
 use Filament\Support\Assets\Css;
-use Filament\Support\Assets\Js;
 use Filament\Support\Facades\FilamentAsset;
 use Illuminate\Database\Schema\Blueprint;
 use InvadersXX\FilamentNestedList\Macros\BlueprintMacros;
@@ -38,7 +38,7 @@ class FilamentNestedListServiceProvider extends PackageServiceProvider
     {
         FilamentAsset::register([
             Css::make('filament-nested-list', __DIR__ . '/../resources/dist/filament-nested-list.css')->loadedOnRequest(),
-            Js::make('filament-nested-list', __DIR__ . '/../resources/dist/filament-nested-list.js'),
+            AlpineComponent::make('filament-nested-list', __DIR__ . '/../resources/dist/filament-nested-list.js'),
         ], 'invaders-xx/filament-nested-list');
     }
 

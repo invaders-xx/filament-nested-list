@@ -1,18 +1,20 @@
-import NestedSort from 'nested-sort'
+import NestedSort from 'nested-sort';
 
-window.NestedSort = NestedSort;
-
-document.addEventListener('alpine:init', () => {
-    Alpine.data('nestedList', (initialItems = [], maxDepth = 2, el = '#nestedList') => ({
-        items: initialItems,
+export default function nestedList({
+                                       items = [],
+                                       maxDepth = 2,
+                                       selector = '#nestedList',
+                                   }) {
+    return {
+        items: items,
         init() {
             let rootThis = this;
             let svg = '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">\n' +
                 '  <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5ZM12 12.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5ZM12 18.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5Z" />\n' +
                 '</svg>';
             let nestedSortable = new NestedSort({
-                el: el,
-                data: this.$data.items,
+                el: selector,
+                data: rootThis.items,
                 listClassNames: 'fi-nested-list',
                 listItemClassNames: 'fi-nested-list-item',
                 nestingLevels: maxDepth,
@@ -30,13 +32,13 @@ document.addEventListener('alpine:init', () => {
                 },
                 actions: {
                     onDrop: function (data) {
-                        rootThis.$data.items = data;
+                        rootThis.items = data;
                     },
                 },
-            })
+            });
         },
         save() {
-            this.$wire.updateNestedList(this.$data.items)
+            this.$wire.updateNestedList(this.items)
         },
-    }));
-});
+    }
+}

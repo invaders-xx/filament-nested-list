@@ -39,26 +39,6 @@ trait HasRecords
         return $this->records = $this->getSortedQuery()->get();
     }
 
-    public function getNestedListRecord(?string $key): ?Model
-    {
-        return $this->resolveNestedListRecord($key);
-    }
-
-    public function getRootLayerRecords(): \Illuminate\Support\Collection
-    {
-        return collect($this->getRecords() ?? [])
-            ->filter(function (Model $record) {
-                if (method_exists($record, 'isRoot')) {
-                    return $record->isRoot();
-                }
-                if (method_exists($record, 'determineParentColumnName')) {
-                    return $record->getAttributeValue($record->determineParentColumnName()) === Utils::defaultParentId();
-                }
-
-                return $record->getAttributeValue('parent') === Utils::defaultParentId();
-            });
-    }
-
     protected function getSortedQuery(): Builder
     {
         $query = $this->getWithRelationQuery();
@@ -84,6 +64,11 @@ trait HasRecords
         return $this->getModel()::query();
     }
 
+    public function getNestedListRecord(?string $key): ?Model
+    {
+        return $this->resolveNestedListRecord($key);
+    }
+
     protected function resolveNestedListRecord(?string $key): ?Model
     {
         if (null === $key) {
@@ -91,5 +76,20 @@ trait HasRecords
         }
 
         return $this->getSortedQuery()->find($key);
+    }
+
+    public function getRootLayerRecords(): \Illuminate\Support\Collection
+    {
+        return collect($this->getRecords() ?? [])
+            ->filter(function (Model $record) {
+                if (method_exists($record, 'isRoot')) {
+                    return $record->isRoot();
+                }
+                if (method_exists($record, 'determineParentColumnName')) {
+                    return $record->getAttributeValue($record->determineParentColumnName()) === Utils::defaultParentId();
+                }
+
+                return $record->getAttributeValue('parent') === Utils::defaultParentId();
+            });
     }
 }
