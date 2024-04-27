@@ -1,4 +1,4 @@
-import NestedSort from 'nested-sort';
+/*import NestedSort from 'nested-sort';
 
 export default function nestedList({
                                        items = [],
@@ -39,6 +39,50 @@ export default function nestedList({
         },
         save() {
             this.$wire.updateNestedList(this.items)
+        },
+    }
+}*/
+
+import Sortable from "sortablejs"
+
+export default function nestedList({
+                                       treeId,
+                                       id,
+                                       maxDepth
+                                   }) {
+    return {
+        id,
+        sortable: null,
+
+        init() {
+            let el = document.getElementById(id);
+            this.sortable = new Sortable(el, {
+                group: treeId,
+                animation: 150,
+                fallbackOnBody: true,
+                swapThreshold: 0.25,
+                invertSwap: true,
+                draggable: "[data-sortable-item]",
+                handle: "[data-sortable-handle]",
+                onMove: (evt) => {
+                    if (maxDepth && maxDepth >= 0 && this.getDepth(evt.related) > maxDepth) {
+                        return false;  // Prevent dragging items to a depth greater than maxDepth
+                    }
+                },
+                onSort: () => {
+                    console.log(this.sortable.toArray());
+                }
+            })
+        },
+
+        getDepth(el, depth = 0) {
+            const parentElement = el.parentElement.closest('[data-sortable-item]');
+
+            if (parentElement) {
+                return this.getDepth(parentElement, ++depth);
+            }
+
+            return depth;
         },
     }
 }

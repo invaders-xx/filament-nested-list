@@ -25,6 +25,7 @@
     "tailwindcss": "^3.4.3"
   },
   "dependencies": {
-    "nested-sort": "^5.2.0"
+    "nested-sort": "^5.2.0",
+    "sortablejs": "^1.15.2"
   }
 }
