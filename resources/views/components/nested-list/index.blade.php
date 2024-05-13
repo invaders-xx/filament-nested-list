@@ -1,26 +1,22 @@
 @php
     use Filament\Support\Facades\FilamentAsset;
     use Illuminate\Support\Js;
-    $containerKey = 'filament_tree_container_' . $this->getId();
     $maxDepth = $getMaxDepth() ?? -1;
-    $data = collect($this->getRecords() ?? [])
-        ->map(function ($record) {
-            $data = [
-                'id' => $record->id,
-                'order' => $record->order,
-                'text' => $this->getNestedListRecordTitle($record),
-            ];
-            $parent = $this->getParentKey($record);
-            if ($parent > 0) {
-                $data['parent_id'] = $parent;
-            }
-            return $data;
-        })
-        ->toArray();
 @endphp
-<div>
+<div x-data="{}"
+     x-load-css="[@js(FilamentAsset::getStyleHref('filament-nested-list', package: 'invaders-xx/filament-nested-list'))]"
+>
     <div wire:ignore
-         x-data="nestedList(JSON.parse('{{ json_encode($data) }}'), {{ $maxDepth }})">
+         x-ignore
+         ax-load
+         ax-load-src="{{ FilamentAsset::getAlpineComponentSrc('filament-nested-list', 'invaders-xx/filament-nested-list') }}"
+         x-data="nestedList({
+             items: @js($this->getNestedListData()),
+             maxDepth: {{ $maxDepth }},
+             selector: '#nestedList'
+         })"
+
+    >
         <x-filament::section :heading="($this->displayNestedListTitle() ?? false) ? $this->getNestedListTitle() : null">
             <menu class="mb-4 flex gap-2" id="nestable-menu">
                 <x-filament::button
@@ -35,7 +31,8 @@
                 </span>
                 </x-filament::button>
             </menu>
-            <div id="nestedList"></div>
+            <div id="nestedList">
+            </div>
         </x-filament::section>
     </div>
     <form wire:submit.prevent="callMountedNestedListAction">
