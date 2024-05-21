@@ -1,4 +1,4 @@
-![invaders-xx-nested-list](https://github.com/invaders-xx/filament-nested-list/assets/604907/f74b0dfa-4722-468b-afea-fcd566e1d331)
+![invaders-xx-nested-list](https://github.com/invaders-xx/filament-nested-list/assets/604907/a04b69df-8681-4ab8-ae1c-681aa92a8f08)
 
 # Filament Nested List
 
